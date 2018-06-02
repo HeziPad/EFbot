@@ -949,8 +949,6 @@ def upgrade_units():
     wR.upgrade_units_timer.start()
 
 
-"""Helpful functions"""
-
 w = wR()
 time.sleep(5)
 w.startTimer()
