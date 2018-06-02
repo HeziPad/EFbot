@@ -13,6 +13,8 @@ from PIL import Image, ImageFilter, ImageEnhance
 import pytesseract
 from pytesseract import image_to_string
 from myemail import send_gmail
+from imageProcessing import detect_level
+
 
 pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
 
@@ -542,18 +544,18 @@ def reopen_game():
     wR.is_reopen_game = False
 
 
-def detect_level():
-    pyautogui.screenshot('lvl.png', region=(932, 43, 60, 23))
-    im = Image.open("lvl.png")  # the second one
-    im = im.filter(ImageFilter.EDGE_ENHANCE_MORE)
-    enhancer = ImageEnhance.Contrast(im)
-    im = im.filter(ImageFilter.MinFilter(size=1))
-    im = enhancer.enhance(3)
-    im = im.convert('L')
-    im.save('lvl.png')
-    text = int(image_to_string(Image.open('lvl.png'), lang='eng', boxes=False, config='--psm 8 tessedit_char_whitelist 0123456789'))
-    print(text)
-    return text
+# def detect_level():
+#     pyautogui.screenshot('lvl.png', region=(932, 43, 60, 23))
+#     im = Image.open("lvl.png")  # the second one
+#     im = im.filter(ImageFilter.EDGE_ENHANCE_MORE)
+#     enhancer = ImageEnhance.Contrast(im)
+#     im = im.filter(ImageFilter.MinFilter(size=1))
+#     im = enhancer.enhance(3)
+#     im = im.convert('L')
+#     im.save('lvl.png')
+#     text = int(image_to_string(Image.open('lvl.png'), lang='eng', boxes=False, config='--psm 8 tessedit_char_whitelist 0123456789'))
+#     print(text)
+#     return text
 
 
 def level_check():
