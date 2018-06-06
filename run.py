@@ -87,9 +87,11 @@ class wR():
     delay = 0.5
     delay_small = 0.1
 
+    start_time = time.time()
     level_check_time = time.time()
-    level_filter = [1] * 50
+    level_filter = [1] * 20
     level = 1
+    level_tmp = 1
     check_number = 0
     open_chests_counter = 0
     max_quests_counter = 0
@@ -396,9 +398,11 @@ class wR():
 
 
 def init():
+    wR.start_time = time.time()
     wR.level_check_time = time.time()
-    wR.level_filter = [1] * 50
+    wR.level_filter = [1] * 20
     wR.level = 1
+    wR.level_tmp = 1
     wR.check_number = 0
     wR.open_chests_counter = 0
     wR.max_quests_counter = 0
@@ -467,7 +471,7 @@ def revive(gems=False):
                                 try:  # must
                                     x, y = pyautogui.locateCenterOnScreen('ConfirmRevive.png', region=(910, 950, 100, 50))
                                     pyautogui.click(x, y)
-                                    time.sleep(wR.delay * 2 * 10)
+                                    time.sleep(wR.delay * 2 * 20)
                                     revival_done = True
                                     try:  # maybe
                                         x, y = pyautogui.locateCenterOnScreen('Join.png', region=(825, 660, 80, 50))
@@ -489,7 +493,7 @@ def revive(gems=False):
                         time.sleep(wR.delay)
             except:
                 time.sleep(wR.delay)
-        print('revived at level ', wR.level)
+        print('revived at level {} in {} seconds'.format(wR.level, time.time() - wR.start_time))
         init()
         w.startTimer()
         wR.is_revive = False
@@ -565,11 +569,14 @@ def level_check():
         wR.level_filter.pop()
         filtered_level = statistics.median(wR.level_filter)
 
-        if time.time() - wR.level_check_time >= 24:
-            if filtered_level - wR.level < 10:
+        if filtered_level > wR.level:
+            wR.level = filtered_level
+
+        if time.time() - wR.level_check_time >= 60:
+            if wR.level - wR.level_tmp < 10:
                 if wR.level > 20800:
                     wR.max_level_reached = True
-            wR.level = filtered_level
+            wR.level_tmp = wR.level
             wR.level_check_time = time.time()
 
         if wR.max_level_reached:
@@ -681,6 +688,12 @@ def open_chests():
                         reopen_game()
                     except:
                         pass
+                elif wR.check_number == 10:
+                    try:
+                        x, y = pyautogui.locateCenterOnScreen('XBuyUnit.png', region=(1200, 100, 65, 65))
+                        reopen_game()
+                    except:
+                        pass
                 # elif wR.check_number == 4:
                 #     try:
                 #         x, y = pyautogui.locateCenterOnScreen('ViewAdConfirm.png')
@@ -692,7 +705,7 @@ def open_chests():
             finally:
                 if wR.open_chests_counter >= 2000:
                     wR.open_chests_counter = 0
-                if wR.check_number >= 10:
+                if wR.check_number >= 11:
                     wR.check_number = 0
 
         wR.open_chests_counter += 1
@@ -754,62 +767,6 @@ def max_quests():
 
     wR.max_quests_timer = Timer(8, max_quests)
     wR.max_quests_timer.start()
-
-
-def upgrade_units():
-    if wR.exiting:
-        return
-    elif not wR.is_buy_units and not wR.is_max_quests and not wR.is_revive and not wR.is_reopen_game:
-        wR.is_upgrade_units = True
-        try:
-            x, y = pyautogui.locateCenterOnScreen('Unit.png', region=(750, 935, 120, 100))
-            pyautogui.click(x, y)
-            time.sleep(wR.delay)
-        except:
-            try:
-                x, y = pyautogui.locateCenterOnScreen('quests.png', region=(645, 930, 120, 100))
-                pyautogui.click(x, y)
-                time.sleep(wR.delay)
-                x, y = pyautogui.locateCenterOnScreen('Unit.png', region=(750, 935, 120, 100))
-                pyautogui.click(x, y)
-                time.sleep(wR.delay)
-            except:
-                pass
-        finally:
-            if pyautogui.locateCenterOnScreen('UnitOn.png', region=(750, 935, 120, 100)):
-                if not wR.upgraded_units_once:
-                    try:
-                        x, y = pyautogui.locateCenterOnScreen('UpgradeAll.png', region=(830, 510, 150, 100))
-                        pyautogui.click(x, y)
-                        time.sleep(wR.delay)
-                        for x in range(4):
-                            pyautogui.click(745 + 143 * x, 410, clicks=5, interval=wR.delay_small)
-                        time.sleep(wR.delay)
-                        x, y = pyautogui.locateCenterOnScreen('X_UpgradeAll.png', region=(1175, 175, 100, 100))
-                        pyautogui.click(x, y)
-                        time.sleep(wR.delay)
-                        wR.upgraded_units_once = True
-                    except:
-                        pass
-                else:
-                    pyautogui.click(1180, 645, clicks=5, interval=wR.delay_small)
-                    pyautogui.click(825, 645, clicks=5, interval=wR.delay_small)
-                    pyautogui.click(1025, 645, clicks=5, interval=wR.delay_small)
-                    time.sleep(wR.delay)
-                    try:
-                        x, y = pyautogui.locateCenterOnScreen('X_UnitInfo.png', region=(1200, 90, 100, 100))
-                        pyautogui.click(x, y)
-                        time.sleep(wR.delay)
-                    except:
-                        pass
-                wR.is_upgrade_units = False
-    else:
-        wR.upgrade_units_timer = Timer(30, upgrade_units)
-        wR.upgrade_units_timer.start()
-        return
-
-    wR.upgrade_units_timer = Timer(3 * 60, upgrade_units)
-    wR.upgrade_units_timer.start()
 
 
 def buy_units():
@@ -934,11 +891,21 @@ def upgrade_units():
                     pyautogui.click(1180, 645, clicks=5, interval=wR.delay_small)
                     pyautogui.click(825, 645, clicks=5, interval=wR.delay_small)
                     pyautogui.click(1025, 645, clicks=5, interval=wR.delay_small)
-                    time.sleep(wR.delay)
+                    time.sleep(wR.delay * 2 * 2)
                     try:
                         x, y = pyautogui.locateCenterOnScreen('X_UnitInfo.png', region=(1200, 90, 100, 100))
                         pyautogui.click(x, y)
-                        time.sleep(wR.delay)
+                        time.sleep(wR.delay * 2 * 2)
+                    except:
+                        pass
+                    pyautogui.click(1180, 750, clicks=5, interval=wR.delay_small)
+                    pyautogui.click(825, 750, clicks=5, interval=wR.delay_small)
+                    pyautogui.click(1025, 750, clicks=5, interval=wR.delay_small)
+                    time.sleep(wR.delay * 2 * 2)
+                    try:
+                        x, y = pyautogui.locateCenterOnScreen('X_UnitInfo.png', region=(1200, 90, 100, 100))
+                        pyautogui.click(x, y)
+                        time.sleep(wR.delay * 2 * 2)
                     except:
                         pass
                 wR.is_upgrade_units = False

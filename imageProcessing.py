@@ -37,5 +37,4 @@ def detect_level():
                 pix[x,y] = (0, 0, 0)
     im.save(image)  # Save the modified pixels as .png
     text = int(image_to_string(Image.open(image), lang='eng', boxes=False, config='--psm 8 tessedit_char_whitelist '                                                                   '0123456789'))
-    print(text)
     return text
