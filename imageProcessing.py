@@ -1,15 +1,5 @@
-import statistics
-import subprocess
-from PIL import ImageGrab
-import cv2
-import numpy as np
-from numpy import array
-import time
 import pyautogui
-from threading import Timer
-from pynput import keyboard
-import sys
-from PIL import Image, ImageFilter, ImageEnhance
+from PIL import Image, ImageEnhance
 import pytesseract
 from pytesseract import image_to_string
 pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
@@ -36,6 +26,7 @@ def detect_level():
             if dist(pix[x,y]) > 20:
                 pix[x,y] = (0, 0, 0)
     im.save(image)  # Save the modified pixels as .png
-    text = int(image_to_string(Image.open(image), lang='eng', boxes=False, config='--psm 8 tessedit_char_whitelist '                                                                   '0123456789'))
+    text = int(image_to_string(Image.open(image), lang='eng', boxes=False
+                               , config='--psm 8 tessedit_char_whitelist 0123456789'))
     print(text)
     return text
