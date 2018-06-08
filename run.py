@@ -691,7 +691,8 @@ def open_chests():
                 elif wR.check_number == 10:
                     try:
                         x, y = pyautogui.locateCenterOnScreen('XBuyUnit.png', region=(1200, 100, 65, 65))
-                        reopen_game()
+                        pyautogui.click(x, y)
+                        time.sleep(wR.delay)
                     except:
                         pass
                 # elif wR.check_number == 4:
