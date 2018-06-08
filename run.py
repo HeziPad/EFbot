@@ -296,7 +296,7 @@ def level_check():
             logging.debug('No.')
 
         logging.debug('time.time() - wR.level_check_time >= 60 ?')
-        if time.time() - wR.level_check_time >= 90:
+        if time.time() - wR.level_check_time >= 60:
             logging.debug('Yes. wR.level - wR.level_tmp < 10 ?')
             if wR.level - wR.level_tmp < 10:
                 logging.debug('Yes. wR.level > 20800 ?')
