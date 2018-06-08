@@ -19,63 +19,6 @@ logging.basicConfig(filename='log.txt',
 pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
 
 
-# #Makes Full Screen
-# try:
-#     x,y = pyautogui.locateCenterOnScreen('full_screen.png')
-#     pyautogui.click(x, y)
-# except:
-#     print 'Nox didn\'t open'
-
-# Open Endless Frontier
-# def openGame():
-#     try:
-#         x,y = pyautogui.locateCenterOnScreen('endless_frontier.png')
-#         pyautogui.click(x, y)
-#         loading = True
-#         while(loading):
-#             time.sleep(2)
-#             try:
-#                 x,y = pyautogui.locateCenterOnScreen('open_game_confirm.png')
-#                 pyautogui.click(x, y)
-#                 loading = False
-#             except:
-#                 try:
-#                     x,y = pyautogui.locateCenterOnScreen('dont_show.png')
-#                     pyautogui.click(x, y)
-#                     time.sleep(1)
-#                     x,y = pyautogui.locateCenterOnScreen('open_game_x.png')
-#                     pyautogui.click(x, y)
-#                     loading = False
-#                 except:
-#                     try:
-#                         x,y = pyautogui.locateCenterOnScreen('medal_check.png')
-#                         pyautogui.click(x, y)
-#                         loading = False
-#                     except:
-#                         pass
-#         time.sleep(3)
-#         try:
-#             x,y = pyautogui.locateCenterOnScreen('dont_show.png')
-#             pyautogui.click(x, y)
-#             time.sleep(1)
-#             x,y = pyautogui.locateCenterOnScreen('open_game_x.png')
-#             pyautogui.click(x, y)
-#             time.sleep(3)
-#         except:
-#             pass
-#     except:
-#         print 'Endless Frontier didn\'t open'
-
-# def closeGame():
-#     x,y = pyautogui.locateCenterOnScreen('minimize_game.png')
-#     pyautogui.click(x, y)
-#     time.sleep(3)
-#     x,y = pyautogui.locateCenterOnScreen('minimize_game_logo.png')
-#     pyautogui.mouseDown(x, y, button='left')
-#     pyautogui.moveRel(-300, 0, 1.5)
-#     pyautogui.mouseUp(x-300, y, button='left')
-#     time.sleep(2)
-
 class wR():
     logging.info('creating a class member')
     is_use_skills = False
@@ -260,8 +203,8 @@ def revive(gems=False):
             except Exception as e:
                 logging.error('ReviveGems / Revive NOT found {}'.format(e))
                 time.sleep(wR.delay)
-        logging.info('revived at level {} in {} seconds'.format(wR.level, time.time() - wR.start_time))
-        print('revived at level {} in {} seconds'.format(wR.level, time.time() - wR.start_time))
+        logging.info('revived at level {} in {} seconds'.format(wR.level, (time.time() - wR.start_time)/60.0))
+        print('revived at level {} in {} seconds'.format(wR.level, (time.time() - wR.start_time)/60.0))
         init()
         w.startTimer()
         wR.is_revive = False
@@ -338,8 +281,10 @@ def level_check():
     logging.info('level_check')
     if not wR.max_level_reached:
         text = detect_level()
-        wR.level_filter.insert(0, text)
-        wR.level_filter.pop()
+        logging.debug('detected level = {}'.format(text))
+        if text >= statistics.median(wR.level_filter):
+            wR.level_filter.insert(0, text)
+            wR.level_filter.pop()
         filtered_level = statistics.median(wR.level_filter)
         logging.debug('filtered_level = {} wR.level_filter = {}'.format(filtered_level, wR.level_filter))
 
@@ -362,11 +307,12 @@ def level_check():
                     logging.debug('No.')
             else:
                 logging.debug('No.')
+                wR.level_tmp = wR.level
+                wR.level_check_time = time.time()
         else:
             logging.debug('No.')
-            logging.debug('wR.level_tmp = {} wR.level_check_time = {}'.format(wR.level, time.time()))
-            wR.level_tmp = wR.level
-            wR.level_check_time = time.time()
+            logging.debug('wR.level_tmp = {} wR.level_check_time = {}'.format(wR.level, time.strftime('%H:%M:%S')))
+
 
         logging.debug('wR.max_level_reached ?')
         if wR.max_level_reached:
@@ -383,7 +329,7 @@ def use_skills():
     try:
         level_check()
     except ValueError as e:
-        logging.debug('{}'.format(e))
+        pass
     if wR.exiting:
         return
     elif not wR.is_max_quests and not wR.is_upgrade_units and not wR.is_buy_units and not wR.is_revive and not wR.is_reopen_game and not wR.is_use_skills:
@@ -509,9 +455,11 @@ def open_chests():
                 elif wR.check_number == 9:
                     try:
                         logging.info('ServerConnectionLost...')
-                        pyautogui.locateCenterOnScreen('ServerConnectionLost.png', region=(900, 530, 120, 50))
-                        logging.info('ServerConnectionLost found')
-                        reopen_game()
+                        if pyautogui.locateCenterOnScreen('ServerConnectionLost.png', region=(900, 530, 120, 50)):
+                            logging.info('ServerConnectionLost found')
+                            reopen_game()
+                        else:
+                            logging.debug('ServerConnectionLost NOT found {}'.format(e))
                     except Exception as e:
                         logging.debug('ServerConnectionLost NOT found {}'.format(e))
                 elif wR.check_number == 10:
