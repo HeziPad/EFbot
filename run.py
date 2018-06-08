@@ -1,20 +1,14 @@
 import statistics
-import subprocess
-from PIL import ImageGrab
-import cv2
-import numpy as np
-from numpy import array
-import time
-import pyautogui
-from threading import Timer
-from pynput import keyboard
 import sys
-from PIL import Image, ImageFilter, ImageEnhance
-import pytesseract
-from pytesseract import image_to_string
-from myemail import send_gmail
-from imageProcessing import detect_level
+import time
+from threading import Timer
 
+import pyautogui
+import pytesseract
+from pynput import keyboard
+
+from imageProcessing import detect_level
+from myemail import send_gmail
 
 pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
 
@@ -99,6 +93,7 @@ class wR():
     distortion_passed = False
     upgraded_units_once = False
     max_level_reached = False
+    last_drag_reached = False
 
     def startTimer(self):
         self.skills_timer = Timer(2, use_skills)
@@ -410,6 +405,7 @@ def init():
     wR.distortion_passed = False
     wR.upgraded_units_once = False
     wR.max_level_reached = False
+    wR.last_drag_reached = False
 
 
 def revive(gems=False):
@@ -546,20 +542,6 @@ def reopen_game():
     init()
     w.startTimer()
     wR.is_reopen_game = False
-
-
-# def detect_level():
-#     pyautogui.screenshot('lvl.png', region=(932, 43, 60, 23))
-#     im = Image.open("lvl.png")  # the second one
-#     im = im.filter(ImageFilter.EDGE_ENHANCE_MORE)
-#     enhancer = ImageEnhance.Contrast(im)
-#     im = im.filter(ImageFilter.MinFilter(size=1))
-#     im = enhancer.enhance(3)
-#     im = im.convert('L')
-#     im.save('lvl.png')
-#     text = int(image_to_string(Image.open('lvl.png'), lang='eng', boxes=False, config='--psm 8 tessedit_char_whitelist 0123456789'))
-#     print(text)
-#     return text
 
 
 def level_check():
@@ -751,10 +733,11 @@ def max_quests():
                         time.sleep(wR.delay)
                         wR.is_max_quests = False
                         return
-                    # elif pyautogui.locateCenterOnScreen('last_drag.png', region=(675, 545, 300, 120)):
-                    #     wR.quests_add_rel += drag_by
-                    #     pyautogui.click(x, y)
-                    #     time.sleep(wR.delay)
+                    elif pyautogui.locateCenterOnScreen('last_drag.png', region=(675, 545, 300, 120)):
+                        wR.last_drag_reached = True
+                        wR.quests_add_rel += drag_by
+                        pyautogui.click(x, y)
+                        time.sleep(wR.delay)
                     else:
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -762,11 +745,12 @@ def max_quests():
                     wR.max_quests_counter = 0
                 except:
                     wR.max_quests_counter += 1
-                if wR.max_quests_counter > 10:
-                    pyautogui.dragRel(0, drag_by, 1, tween=pyautogui.easeOutQuad, button='left')
+                if wR.max_quests_counter > 6:
+                    if not wR.last_drag_reached:
+                        pyautogui.dragRel(0, drag_by, 1, tween=pyautogui.easeOutQuad, button='left')
         wR.is_max_quests = False
 
-    wR.max_quests_timer = Timer(8, max_quests)
+    wR.max_quests_timer = Timer(2 + wR.max_quests_counter, max_quests)
     wR.max_quests_timer.start()
 
 
@@ -797,7 +781,7 @@ def buy_units():
                 time.sleep(wR.delay)
                 try:
                     x, y = pyautogui.locateCenterOnScreen('Refresh.png', region=(935, 510, 280, 100))
-                    time.sleep(wR.delay * 2)
+                    time.sleep(wR.delay * 2 * 2)
                     pyautogui.click(x, y)
                     time.sleep(wR.delay)
                     done = False
