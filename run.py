@@ -118,13 +118,11 @@ def revive(gems=False):
                         x, y = pyautogui.locateCenterOnScreen('ReviveasRevivalteam.png', region=(720, 675, 220, 50))
                         logging.info('ReviveasRevivalteam found')
                         pyautogui.click(x, y)
-                        time.sleep(wR.delay * 2 * 20)
                         # what if code?
                         try:
                             logging.info('SolveCode...')
                             x, y = pyautogui.locateCenterOnScreen('SolveCode.png', region=(760, 150, 220, 100))
                             logging.info('SolveCode found')
-                            pyautogui.click(x, y)
                             time.sleep(wR.delay)
                             revival_done = True
                             counter = 0
@@ -170,6 +168,7 @@ def revive(gems=False):
                                 try:  # must
                                     logging.info('ConfirmRevive...')
                                     x, y = pyautogui.locateCenterOnScreen('ConfirmRevive.png', region=(910, 950, 100, 50))
+                                    time.sleep(wR.delay * 2 * 5)
                                     logging.info('ConfirmRevive found')
                                     pyautogui.click(x, y)
                                     time.sleep(wR.delay * 2 * 20)
