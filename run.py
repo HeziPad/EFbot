@@ -625,7 +625,7 @@ def upgrade_units():
         wR.upgrade_units_timer.start()
         return
 
-    wR.upgrade_units_timer = Timer(3 * 60, upgrade_units)
+    wR.upgrade_units_timer = Timer(6 * 60, upgrade_units)
     wR.upgrade_units_timer.start()
 
 
