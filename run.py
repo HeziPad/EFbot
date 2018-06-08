@@ -29,6 +29,7 @@ class wR():
     is_buy_units = False
     is_upgrade_units = False
     exiting = False
+    spirit_rest = False
     delay = 0.5
     delay_small = 0.1
 
@@ -47,7 +48,7 @@ class wR():
     last_drag_reached = False
 
     def startTimer(self):
-        logging.info('STARTing timer')
+        logging.info('START timer')
         self.skills_timer = Timer(2, use_skills)
         self.skills_timer.start()
         self.open_chests_timer = Timer(3, open_chests)
@@ -68,6 +69,17 @@ class wR():
         self.upgrade_units_timer.cancel()
         self.buy_units_timer.cancel()
         logging.info('STOP timer - done')
+
+    def startTimerSRmode(self):
+        logging.info('START timer SR mode')
+        self.buy_units_timer = Timer(2 * 60, buy_units)
+        self.buy_units_timer.start()
+        logging.info('START timer SR mode - done')
+
+    def stopTimerSRmode(self):
+        logging.info('STOP timer SR mode')
+        self.buy_units_timer.cancel()
+        logging.info('STOP timer SR mode - done')
 
 
 """MY FUNCS"""
@@ -782,6 +794,20 @@ def on_press(key):
         logging.info('Exiting')
         wR.exiting = True
         sys.exit()
+    elif key.char == 's':
+        wR.spirit_rest = not wR.spirit_rest
+        if wR.spirit_rest:
+            print('Starting SR mode')
+            logging.info('Starting SR mode')
+            w.stopTimer()
+            time.sleep(wR.delay * 2 * 10)
+            w.startTimerSRmode()
+        else:
+            print('Stoping SR mode')
+            logging.info('Stoping SR mode')
+            w.stopTimerSRmode()
+            time.sleep(wR.delay * 2 * 10)
+            w.startTimer()
     else:
         logging.info('Another Key pressed')
 
