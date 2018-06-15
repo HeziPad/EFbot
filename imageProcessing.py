@@ -25,7 +25,7 @@ def dist(pixel):
 
 def detect_level():
     try:
-        image = 'lvl.png'
+        image = './pictures/lvl.png'
         pyautogui.screenshot(image, region=(932, 43, 60, 23))
         im = Image.open(image) # Can be many different formats.
         enhance = ImageEnhance.Sharpness(im)
