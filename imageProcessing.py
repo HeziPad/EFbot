@@ -2,8 +2,19 @@ import pyautogui
 from PIL import Image, ImageEnhance
 import pytesseract
 from pytesseract import image_to_string
+import numpy as np
 pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
 
+def mse(imageA, imageB):
+    # the 'Mean Squared Error' between the two images is the
+    # sum of the squared difference between the two images;
+    # NOTE: the two images must have the same dimension
+    err = np.sum((imageA.astype("float") - imageB.astype("float")) ** 2)
+    err /= float(imageA.shape[0] * imageA.shape[1])
+
+    # return the MSE, the lower the error, the more "similar"
+    # the two images are
+    return err
 
 def dist(pixel):
     max_dif = abs(pixel[0] - pixel[1])
