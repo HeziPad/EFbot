@@ -24,20 +24,22 @@ def dist(pixel):
 
 
 def detect_level():
-    image = 'lvl.png'
-    pyautogui.screenshot(image, region=(932, 43, 60, 23))
-    im = Image.open(image) # Can be many different formats.
-    enhance = ImageEnhance.Sharpness(im)
-    im = enhance.enhance(3)
+    try:
+        image = 'lvl.png'
+        pyautogui.screenshot(image, region=(932, 43, 60, 23))
+        im = Image.open(image) # Can be many different formats.
+        enhance = ImageEnhance.Sharpness(im)
+        im = enhance.enhance(3)
 
-    pix = im.load()
-    columns, rows = im.size # Get the width and hight of the image for iterating over
-    for x in range(columns):
-        for y in range(rows):
-            if dist(pix[x,y]) > 20:
-                pix[x,y] = (0, 0, 0)
-    im.save(image)  # Save the modified pixels as .png
-    text = int(image_to_string(Image.open(image), lang='eng', boxes=False
-                               , config='--psm 8 tessedit_char_whitelist 0123456789'))
-    print(text)
-    return text
+        pix = im.load()
+        columns, rows = im.size # Get the width and hight of the image for iterating over
+        for x in range(columns):
+            for y in range(rows):
+                if dist(pix[x,y]) > 20:
+                    pix[x,y] = (0, 0, 0)
+        im.save(image)  # Save the modified pixels as .png
+        text = int(image_to_string(Image.open(image), lang='eng', boxes=False
+                                   , config='-c tessedit_char_whitelist=0123456789'))
+        return text
+    except:
+        return 0

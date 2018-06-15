@@ -35,7 +35,7 @@ class wR():
 
     start_time = time.time()
     level_check_time = time.time()
-    level_filter = [1] * 20
+    level_filter = [1] * 50
     level = 1
     level_tmp = 1
     check_number = 0
@@ -89,7 +89,7 @@ def init():
     logging.info('init')
     wR.start_time = time.time()
     wR.level_check_time = time.time()
-    wR.level_filter = [1] * 20
+    wR.level_filter = [1] * 50
     wR.level = 1
     wR.level_tmp = 1
     wR.check_number = 0
@@ -130,6 +130,7 @@ def revive(gems=False):
                         x, y = pyautogui.locateCenterOnScreen('ReviveasRevivalteam.png', region=(720, 675, 220, 50))
                         logging.info('ReviveasRevivalteam found')
                         pyautogui.click(x, y)
+                        time.sleep(wR.delay*2*5)
                         # what if code?
                         try:
                             logging.info('SolveCode...')
@@ -215,7 +216,7 @@ def revive(gems=False):
                 logging.error('ReviveGems / Revive NOT found {}'.format(e))
                 time.sleep(wR.delay)
         logging.info('revived at level {} in {} seconds'.format(wR.level, (time.time() - wR.start_time)/60.0))
-        print('revived at level {} in {} seconds'.format(wR.level, (time.time() - wR.start_time)/60.0))
+        print('revived at level {} in {} seconds'.format(statistics.median(wR.level_filter), (time.time() - wR.start_time)/60.0))
         init()
         w.startTimer()
         wR.is_revive = False
@@ -291,56 +292,55 @@ def reopen_game():
 def level_check():
     logging.info('level_check')
     if not wR.max_level_reached:
-        text = detect_level()
-        logging.debug('detected level = {}'.format(text))
-        if text >= statistics.median(wR.level_filter):
-            wR.level_filter.insert(0, text)
+        try:
+            text = detect_level()
+            logging.debug('detected level = {}'.format(text))
+            if 23500 >= text >= statistics.median(wR.level_filter[:5]):
+                wR.level_filter.insert(0, text)
+                wR.level_filter.pop()
+            elif text == 0:
+                wR.level_filter.insert(0, wR.level_filter[0])
+                wR.level_filter.pop()
+            logging.debug('wR.level_filter = {}'.format(wR.level_filter))
+        except ValueError as e:
+            wR.level_filter.insert(0, wR.level_filter[0])
             wR.level_filter.pop()
-        filtered_level = statistics.median(wR.level_filter)
-        logging.debug('filtered_level = {} wR.level_filter = {}'.format(filtered_level, wR.level_filter))
-
-        logging.debug('filtered_level > wR.level ?')
-        if filtered_level > wR.level:
-            wR.level = filtered_level
-            logging.debug('Yes. wR.level = {}'.format(wR.level))
-        else:
-            logging.debug('No.')
-
-        logging.debug('time.time() - wR.level_check_time >= 60 ?')
-        if time.time() - wR.level_check_time >= 60:
-            logging.debug('Yes. wR.level - wR.level_tmp < 10 ?')
-            if wR.level - wR.level_tmp < 10:
-                logging.debug('Yes. wR.level > 20800 ?')
-                if wR.level > 20800:
-                    wR.max_level_reached = True
-                    logging.debug('Yes. wR.max_level_reached = {}'.format(wR.max_level_reached))
+            logging.debug('wR.level_filter = {}'.format(wR.level_filter))
+        finally:
+            filtered_level = statistics.median(wR.level_filter)
+            logging.debug('filtered_level = {} wR.level_filter = {}'.format(filtered_level, wR.level_filter))
+            logging.debug('time.time() - wR.level_check_time >= 60 ?')
+            if time.time() - wR.level_check_time >= 15:
+                logging.debug(
+                    'statistics.median(wR.level_filter[:5]) = {}, statistics.median(wR.level_filter[-6:-1]) = {}'.format(
+                        statistics.median(wR.level_filter[:5]), statistics.median(wR.level_filter[-6:-1])
+                    ))
+                logging.debug('Yes. statistics.median(wR.level_filter[:5]) - statistics.median(wR.level_filter[-6:-1]) < 10 ?')
+                if statistics.median(wR.level_filter[:5]) - statistics.median(wR.level_filter[-6:-1]) < 10:
+                    logging.debug('Yes. statistics.median(wR.level_filter) > 20800 ?')
+                    if statistics.median(wR.level_filter) > 21800:
+                        wR.max_level_reached = True
+                        logging.debug('Yes. wR.max_level_reached = {}'.format(wR.max_level_reached))
+                    else:
+                        logging.debug('No.')
                 else:
                     logging.debug('No.')
+                    wR.level_check_time = time.time()
             else:
                 logging.debug('No.')
-                wR.level_tmp = wR.level
-                wR.level_check_time = time.time()
-        else:
-            logging.debug('No.')
-            logging.debug('wR.level_tmp = {} wR.level_check_time = {}'.format(wR.level, time.strftime('%H:%M:%S')))
 
-
-        logging.debug('wR.max_level_reached ?')
-        if wR.max_level_reached:
-            logging.debug('Yes.')
-            revive()
-        else:
-            logging.debug('No')
-
-        logging.info('level_check - done')
+            logging.debug('wR.max_level_reached ?')
+            if wR.max_level_reached:
+                logging.debug('Yes.')
+                revive()
+            else:
+                logging.debug('No')
+            logging.info('level_check - done')
 
 
 def use_skills():
     logging.info('use_skills')
-    try:
-        level_check()
-    except ValueError as e:
-        pass
+    level_check()
     if wR.exiting:
         return
     elif not wR.is_max_quests and not wR.is_upgrade_units and not wR.is_buy_units and not wR.is_revive and not wR.is_reopen_game and not wR.is_use_skills:
