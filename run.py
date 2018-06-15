@@ -3,6 +3,7 @@ import sys
 import time
 from threading import Timer
 
+
 import pyautogui
 import pytesseract
 from pynput import keyboard
@@ -116,25 +117,25 @@ def revive(gems=False):
             try:
                 if gems:
                     logging.info('ReviveGems...')
-                    x, y = pyautogui.locateCenterOnScreen('ReviveGems.png', region=(700, 920, 300, 80))
+                    x, y = pyautogui.locateCenterOnScreen('/pictures/ReviveGems.png', region=(700, 920, 300, 80))
                     logging.info('ReviveGems found')
                 elif not gems:
                     logging.info('Revive...')
-                    x, y = pyautogui.locateCenterOnScreen('Revive.png', region=(1100, 940, 90, 50))
+                    x, y = pyautogui.locateCenterOnScreen('/pictures/Revive.png', region=(1100, 940, 90, 50))
                     logging.info('Revive found')
                 pyautogui.click(x, y)
                 time.sleep(wR.delay * 2 * 2)
                 while not revival_done:
                     try:  # must
                         logging.info('ReviveasRevivalteam...')
-                        x, y = pyautogui.locateCenterOnScreen('ReviveasRevivalteam.png', region=(720, 675, 220, 50))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/ReviveasRevivalteam.png', region=(720, 675, 220, 50))
                         logging.info('ReviveasRevivalteam found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay*2*5)
                         # what if code?
                         try:
                             logging.info('SolveCode...')
-                            x, y = pyautogui.locateCenterOnScreen('SolveCode.png', region=(760, 150, 220, 100))
+                            x, y = pyautogui.locateCenterOnScreen('/pictures/SolveCode.png', region=(760, 150, 220, 100))
                             logging.info('SolveCode found')
                             time.sleep(wR.delay)
                             revival_done = True
@@ -152,14 +153,14 @@ def revive(gems=False):
                             while True:
                                 try:
                                     logging.info('CancelCode...')
-                                    x, y = pyautogui.locateCenterOnScreen('CancelCode.png', region=(1050, 990, 100, 50))
+                                    x, y = pyautogui.locateCenterOnScreen('/pictures/CancelCode.png', region=(1050, 990, 100, 50))
                                     logging.info('CancelCode found')
                                     pyautogui.click(x, y)
                                     time.sleep(wR.delay)
                                     while True:
                                         try:
                                             logging.info('XRevive...')
-                                            x, y = pyautogui.locateCenterOnScreen('XRevive.png',
+                                            x, y = pyautogui.locateCenterOnScreen('/pictures/XRevive.png',
                                                                                   region=(1200, 45, 100, 100))
                                             logging.info('XRevive found')
                                             pyautogui.click(x, y)
@@ -180,7 +181,7 @@ def revive(gems=False):
                             while not revival_done:
                                 try:  # must
                                     logging.info('ConfirmRevive...')
-                                    x, y = pyautogui.locateCenterOnScreen('ConfirmRevive.png', region=(910, 950, 100, 50))
+                                    x, y = pyautogui.locateCenterOnScreen('/pictures/ConfirmRevive.png', region=(910, 950, 100, 50))
                                     time.sleep(wR.delay * 2 * 5)
                                     logging.info('ConfirmRevive found')
                                     pyautogui.click(x, y)
@@ -188,14 +189,14 @@ def revive(gems=False):
                                     revival_done = True
                                     try:  # maybe
                                         logging.info('Join...')
-                                        x, y = pyautogui.locateCenterOnScreen('Join.png', region=(825, 660, 80, 50))
+                                        x, y = pyautogui.locateCenterOnScreen('/pictures/Join.png', region=(825, 660, 80, 50))
                                         logging.info('Join found')
                                         pyautogui.click(x, y)
                                         time.sleep(wR.delay * 10 * 2)
                                         while True:
                                             try:  # maybe
                                                 logging.info('JoinConfirm...')
-                                                x, y = pyautogui.locateCenterOnScreen('JoinConfirm.png', region=(900, 650, 120, 50))
+                                                x, y = pyautogui.locateCenterOnScreen('/pictures/JoinConfirm.png', region=(900, 650, 120, 50))
                                                 logging.info('JoinConfirm found')
                                                 pyautogui.click(x, y)
                                                 time.sleep(wR.delay)
@@ -231,7 +232,7 @@ def reopen_game():
     while True:
         try:
             logging.info('ServerConnectionLost...')
-            x, y = pyautogui.locateCenterOnScreen('ServerConnectionLost.png', region=(900, 530, 120, 50))
+            x, y = pyautogui.locateCenterOnScreen('/pictures/ServerConnectionLost.png', region=(900, 530, 120, 50))
             logging.info('ServerConnectionLost found')
             pyautogui.click(x, y)
             time.sleep(wR.delay * 2 * 10)
@@ -242,7 +243,7 @@ def reopen_game():
     while True:
         try:
             logging.info('EndlessFrontier...')
-            x, y = pyautogui.locateCenterOnScreen('EndlessFrontier.png')
+            x, y = pyautogui.locateCenterOnScreen('/pictures/EndlessFrontier.png')
             logging.info('EndlessFrontier found')
             pyautogui.click(x, y)
             time.sleep(wR.delay * 2 * 60)
@@ -253,7 +254,7 @@ def reopen_game():
     while True:
         try:
             logging.info('fullScreen...')
-            x, y = pyautogui.locateCenterOnScreen('fullScreen.png')
+            x, y = pyautogui.locateCenterOnScreen('/pictures/fullScreen.png')
             logging.info('fullScreen found')
             pyautogui.click(x, y)
             time.sleep(wR.delay * 2 * 5)
@@ -264,7 +265,7 @@ def reopen_game():
     while True:
         try:
             logging.info('startConfirm...')
-            x, y = pyautogui.locateCenterOnScreen('startConfirm.png', region=(920, 880, 80, 50))
+            x, y = pyautogui.locateCenterOnScreen('/pictures/startConfirm.png', region=(920, 880, 80, 50))
             logging.info('startConfirm found {}'.format(e))
             pyautogui.click(x, y)
             time.sleep(wR.delay * 2 * 5)
@@ -275,7 +276,7 @@ def reopen_game():
     while True:
         try:
             logging.info('XNews...')
-            x, y = pyautogui.locateCenterOnScreen('XNews.png', region=(1150, 840, 50, 50))
+            x, y = pyautogui.locateCenterOnScreen('/pictures/XNews.png', region=(1150, 840, 50, 50))
             logging.info('XNews found')
             pyautogui.click(x, y)
             time.sleep(wR.delay * 2 * 5)
@@ -370,12 +371,12 @@ def open_chests():
         if wR.open_chests_counter % 5 == 0:
             try:
                 logging.info('ViewAd...')
-                x, y = pyautogui.locateCenterOnScreen('ViewAd.png', region=(795, 645, 150, 100))
+                x, y = pyautogui.locateCenterOnScreen('/pictures/ViewAd.png', region=(795, 645, 150, 100))
                 logging.info('ViewAd found')
                 pyautogui.click(x, y)
                 time.sleep(wR.delay)
                 # try:
-                #     x, y = pyautogui.locateCenterOnScreen('ViewAdConfirm.png')
+                #     x, y = pyautogui.locateCenterOnScreen('/pictures/ViewAdConfirm.png')
                 #     pyautogui.click(x, y)
                 #     time.sleep(wR.delay)
                 # except:
@@ -385,7 +386,7 @@ def open_chests():
                 if wR.check_number == 0:
                     try:
                         logging.info('distortion_confirm...')
-                        x, y = pyautogui.locateCenterOnScreen('distortion_confirm.png', region=(895, 810, 150, 100))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/distortion_confirm.png', region=(895, 810, 150, 100))
                         logging.info('distortion_confirm found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -394,7 +395,7 @@ def open_chests():
                 elif wR.check_number == 1:
                     try:
                         logging.info('quest_confirm...')
-                        x, y = pyautogui.locateCenterOnScreen('quest_confirm.png', region=(875, 800, 150, 100))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/quest_confirm.png', region=(875, 800, 150, 100))
                         logging.info('quest_confirm found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -403,7 +404,7 @@ def open_chests():
                 elif wR.check_number == 2:
                     try:
                         logging.info('X_UpgradeAll...')
-                        x, y = pyautogui.locateCenterOnScreen('X_UpgradeAll.png', region=(1175, 175, 100, 100))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/X_UpgradeAll.png', region=(1175, 175, 100, 100))
                         logging.info('X_UpgradeAll found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -412,7 +413,7 @@ def open_chests():
                 elif wR.check_number == 3:
                     try:
                         logging.info('X_UnitInfo...')
-                        x, y = pyautogui.locateCenterOnScreen('X_UnitInfo.png', region=(1200, 90, 100, 100))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/X_UnitInfo.png', region=(1200, 90, 100, 100))
                         logging.info('X_UnitInfo found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -421,7 +422,7 @@ def open_chests():
                 elif wR.check_number == 4:
                     try:
                         logging.info('Join...')
-                        x, y = pyautogui.locateCenterOnScreen('Join.png', region=(825, 660, 80, 50))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/Join.png', region=(825, 660, 80, 50))
                         logging.info('Join found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -430,7 +431,7 @@ def open_chests():
                 elif wR.check_number == 5:
                     try:
                         logging.info('Distortion2Confirm...')
-                        x, y = pyautogui.locateCenterOnScreen('Distortion2Confirm.png', region=(900, 970, 120, 70))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/Distortion2Confirm.png', region=(900, 970, 120, 70))
                         logging.info('Distortion2Confirm found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -439,7 +440,7 @@ def open_chests():
                 elif wR.check_number == 6:
                     try:
                         logging.info('XAirships...')
-                        x, y = pyautogui.locateCenterOnScreen('XAirships.png', region=(650, 40, 70, 70))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/XAirships.png', region=(650, 40, 70, 70))
                         logging.info('XAirships found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -448,7 +449,7 @@ def open_chests():
                 elif wR.check_number == 7:
                     try:
                         logging.info('XBuyUnitGems...')
-                        x, y = pyautogui.locateCenterOnScreen('XBuyUnitGems.png', region=(1185, 535, 70, 70))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/XBuyUnitGems.png', region=(1185, 535, 70, 70))
                         logging.info('XBuyUnitGems found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -457,7 +458,7 @@ def open_chests():
                 elif wR.check_number == 8:
                     try:
                         logging.info('CancelRefresh...')
-                        x, y = pyautogui.locateCenterOnScreen('CancelRefresh.png', region=(1030, 700, 100, 50))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/CancelRefresh.png', region=(1030, 700, 100, 50))
                         logging.info('CancelRefresh found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -466,7 +467,7 @@ def open_chests():
                 elif wR.check_number == 9:
                     try:
                         logging.info('ServerConnectionLost...')
-                        if pyautogui.locateCenterOnScreen('ServerConnectionLost.png', region=(900, 530, 120, 50)):
+                        if pyautogui.locateCenterOnScreen('/pictures/ServerConnectionLost.png', region=(900, 530, 120, 50)):
                             logging.info('ServerConnectionLost found')
                             reopen_game()
                         else:
@@ -476,7 +477,7 @@ def open_chests():
                 elif wR.check_number == 10:
                     try:
                         logging.info('XBuyUnit...')
-                        x, y = pyautogui.locateCenterOnScreen('XBuyUnit.png', region=(1200, 100, 65, 65))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/XBuyUnit.png', region=(1200, 100, 65, 65))
                         logging.info('XBuyUnit found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -507,14 +508,14 @@ def max_quests():
         drag_by = 102
         try:
             logging.info('quests...')
-            x, y = pyautogui.locateCenterOnScreen('quests.png', region=(660, 930, 100, 100))
+            x, y = pyautogui.locateCenterOnScreen('/pictures/quests.png', region=(660, 930, 100, 100))
             logging.info('quests found')
             pyautogui.click(x, y)
             time.sleep(wR.delay)
         except Exception as e:
             logging.debug('quests NOT found {}'.format(e))
         finally:
-            if pyautogui.locateCenterOnScreen('questsOn.png', region=(660, 930, 100, 100)):
+            if pyautogui.locateCenterOnScreen('/pictures/questsOn.png', region=(660, 930, 100, 100)):
                 logging.debug('wR.quests_add_rel = {}'.format(wR.quests_add_rel))
                 for x in range(0, 5):
                     pyautogui.click(1180, 692 + wR.quests_add_rel)
@@ -532,16 +533,16 @@ def max_quests():
                 time.sleep(wR.delay)
                 try:
                     logging.info('quest_confirm...')
-                    x, y = pyautogui.locateCenterOnScreen('quest_confirm.png', region=(875, 800, 150, 100))
+                    x, y = pyautogui.locateCenterOnScreen('/pictures/quest_confirm.png', region=(875, 800, 150, 100))
                     logging.info('quest_confirm found')
-                    if pyautogui.locateCenterOnScreen('last_quest.png', region=(675, 545, 300, 120)):
+                    if pyautogui.locateCenterOnScreen('/pictures/last_quest.png', region=(675, 545, 300, 120)):
                         logging.info('last_quest found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
                         wR.is_max_quests = False
                         logging.info('max_quests - done')
                         return
-                    elif pyautogui.locateCenterOnScreen('last_drag.png', region=(675, 545, 300, 120)):
+                    elif pyautogui.locateCenterOnScreen('/pictures/last_drag.png', region=(675, 545, 300, 120)):
                         logging.info('last_drag found')
                         wR.last_drag_reached = True
                         wR.quests_add_rel += drag_by
@@ -579,7 +580,7 @@ def buy_units():
         time.sleep(wR.delay * 4)
         try:
             logging.info('Unit...')
-            x, y = pyautogui.locateCenterOnScreen('Unit.png', region=(750, 935, 120, 100))
+            x, y = pyautogui.locateCenterOnScreen('/pictures/Unit.png', region=(750, 935, 120, 100))
             logging.info('Unit found')
             pyautogui.click(x, y)
             time.sleep(wR.delay)
@@ -587,12 +588,12 @@ def buy_units():
             logging.debug('Unit NOT found {}'.format(e))
             try:
                 logging.info('quests...')
-                x, y = pyautogui.locateCenterOnScreen('quests.png', region=(645, 930, 120, 100))
+                x, y = pyautogui.locateCenterOnScreen('/pictures/quests.png', region=(645, 930, 120, 100))
                 logging.info('quests found')
                 pyautogui.click(x, y)
                 time.sleep(wR.delay)
                 logging.info('Unit...')
-                x, y = pyautogui.locateCenterOnScreen('Unit.png', region=(750, 935, 120, 100))
+                x, y = pyautogui.locateCenterOnScreen('/pictures/Unit.png', region=(750, 935, 120, 100))
                 logging.info('Unit found')
                 pyautogui.click(x, y)
                 time.sleep(wR.delay)
@@ -601,13 +602,13 @@ def buy_units():
         finally:
             try:
                 logging.info('BuyUnit...')
-                x, y = pyautogui.locateCenterOnScreen('BuyUnit.png', region=(1110, 510, 150, 100))
+                x, y = pyautogui.locateCenterOnScreen('/pictures/BuyUnit.png', region=(1110, 510, 150, 100))
                 logging.info('BuyUnit found')
                 pyautogui.click(x, y)
                 time.sleep(wR.delay)
                 try:
                     logging.info('Refresh...')
-                    x, y = pyautogui.locateCenterOnScreen('Refresh.png', region=(935, 510, 280, 100))
+                    x, y = pyautogui.locateCenterOnScreen('/pictures/Refresh.png', region=(935, 510, 280, 100))
                     logging.info('Refresh found')
                     time.sleep(wR.delay * 2 * 2)
                     pyautogui.click(x, y)
@@ -616,14 +617,14 @@ def buy_units():
                     while not done:
                         try:
                             logging.info('BuyAll...')
-                            x, y = pyautogui.locateCenterOnScreen('BuyAll.png', region=(935, 510, 280, 100))
+                            x, y = pyautogui.locateCenterOnScreen('/pictures/BuyAll.png', region=(935, 510, 280, 100))
                             logging.info('BuyAll found')
                             pyautogui.click(x, y)
                             time.sleep(wR.delay)
                             while not done:
                                 try:
                                     logging.info('BuyAllConfirm...')
-                                    x, y = pyautogui.locateCenterOnScreen('BuyAllConfirm.png',
+                                    x, y = pyautogui.locateCenterOnScreen('/pictures/BuyAllConfirm.png',
                                                                           region=(800, 590, 150, 100))
                                     logging.info('BuyAllConfirm found')
                                     pyautogui.click(x, y)
@@ -631,7 +632,7 @@ def buy_units():
                                     while not done:
                                         try:
                                             logging.info('BuyAllConfirm2...')
-                                            x, y = pyautogui.locateCenterOnScreen('BuyAllConfirm2.png',
+                                            x, y = pyautogui.locateCenterOnScreen('/pictures/BuyAllConfirm2.png',
                                                                                   region=(890, 620, 150, 100))
                                             logging.info('BuyAllConfirm2 found')
                                             pyautogui.click(x, y)
@@ -641,7 +642,7 @@ def buy_units():
                                             logging.debug('BuyAllConfirm2 NOT found {}'.format(e))
                                             try:
                                                 logging.info('BuyAllConfirm3...')
-                                                x, y = pyautogui.locateCenterOnScreen('BuyAllConfirm3.png',
+                                                x, y = pyautogui.locateCenterOnScreen('/pictures/BuyAllConfirm3.png',
                                                                                       region=(910, 660, 100, 40))
                                                 logging.info('BuyAllConfirm3 found')
                                                 pyautogui.click(x, y)
@@ -657,7 +658,7 @@ def buy_units():
                             logging.debug('BuyAll NOT found {}'.format(e))
                             try:
                                 logging.info('UnitsRefreshingConfirm...')
-                                x, y = pyautogui.locateCenterOnScreen('UnitsRefreshingConfirm.png',
+                                x, y = pyautogui.locateCenterOnScreen('/pictures/UnitsRefreshingConfirm.png',
                                                                       region=(865, 690, 200, 100))
                                 logging.info('UnitsRefreshingConfirm found')
                                 pyautogui.click(x, y)
@@ -693,7 +694,7 @@ def upgrade_units():
         wR.is_upgrade_units = True
         try:
             logging.info('Unit...')
-            x, y = pyautogui.locateCenterOnScreen('Unit.png', region=(750, 935, 120, 100))
+            x, y = pyautogui.locateCenterOnScreen('/pictures/Unit.png', region=(750, 935, 120, 100))
             logging.info('Unit found')
             pyautogui.click(x, y)
             time.sleep(wR.delay)
@@ -701,24 +702,24 @@ def upgrade_units():
             logging.debug('Unit NOT found {}'.format(e))
             try:
                 logging.info('quests...')
-                x, y = pyautogui.locateCenterOnScreen('quests.png', region=(645, 930, 120, 100))
+                x, y = pyautogui.locateCenterOnScreen('/pictures/quests.png', region=(645, 930, 120, 100))
                 logging.info('quests found')
                 pyautogui.click(x, y)
                 time.sleep(wR.delay)
                 logging.info('Unit...')
-                x, y = pyautogui.locateCenterOnScreen('Unit.png', region=(750, 935, 120, 100))
+                x, y = pyautogui.locateCenterOnScreen('/pictures/Unit.png', region=(750, 935, 120, 100))
                 logging.info('Unit found')
                 pyautogui.click(x, y)
                 time.sleep(wR.delay)
             except Exception as e:
                 logging.debug('Unit/quests NOT found {}'.format(e))
         finally:
-            if pyautogui.locateCenterOnScreen('UnitOn.png', region=(750, 935, 120, 100)):
+            if pyautogui.locateCenterOnScreen('/pictures/UnitOn.png', region=(750, 935, 120, 100)):
                 logging.debug('wR.upgraded_units_once = {}'.format(wR.upgraded_units_once))
                 if not wR.upgraded_units_once:
                     try:
                         logging.info('UpgradeAll...')
-                        x, y = pyautogui.locateCenterOnScreen('UpgradeAll.png', region=(830, 510, 150, 100))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/UpgradeAll.png', region=(830, 510, 150, 100))
                         logging.info('UpgradeAll found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -726,7 +727,7 @@ def upgrade_units():
                             pyautogui.click(745 + 143 * x, 410, clicks=5, interval=wR.delay_small)
                         time.sleep(wR.delay)
                         logging.info('X_UpgradeAll...')
-                        x, y = pyautogui.locateCenterOnScreen('X_UpgradeAll.png', region=(1175, 175, 100, 100))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/X_UpgradeAll.png', region=(1175, 175, 100, 100))
                         logging.info('X_UpgradeAll found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
@@ -740,7 +741,7 @@ def upgrade_units():
                     time.sleep(wR.delay * 2 * 2)
                     try:
                         logging.info('X_UnitInfo...')
-                        x, y = pyautogui.locateCenterOnScreen('X_UnitInfo.png', region=(1200, 90, 100, 100))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/X_UnitInfo.png', region=(1200, 90, 100, 100))
                         logging.info('X_UnitInfo found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay * 2 * 2)
@@ -752,7 +753,7 @@ def upgrade_units():
                     time.sleep(wR.delay * 2 * 2)
                     try:
                         logging.info('X_UnitInfo...')
-                        x, y = pyautogui.locateCenterOnScreen('X_UnitInfo.png', region=(1200, 90, 100, 100))
+                        x, y = pyautogui.locateCenterOnScreen('/pictures/X_UnitInfo.png', region=(1200, 90, 100, 100))
                         logging.info('X_UnitInfo found')
                         pyautogui.click(x, y)
                         time.sleep(wR.delay * 2 * 2)
