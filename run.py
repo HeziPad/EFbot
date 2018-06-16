@@ -8,7 +8,7 @@ import pyautogui
 import pytesseract
 from pynput import keyboard
 
-from imageProcessing import detect_level
+from imageProcessing import detect_level, imagesearcharea
 from myemail import send_gmail
 from decipherCode import CodeDecipher
 
@@ -144,14 +144,15 @@ def revive(gems=True):
                                     try:
                                         if solve_code():
                                             revival_done = True
-                                            break
+                                            counter = 5
                                         else:
                                             counter += 1
                                     except Exception as e:
+                                        print('not so good',e)
                                         logging.debug('solve_code failed! {}'.format(e))
                                         counter += 1
                                 print('SOLVED THE MADEFUCKA CODE!!!')
-                                revival_done = check_after_revive(revival_done)
+                                revival_done = check_after_revive()
                             except Exception as e:
                                 counter = 0
                                 while counter < 5:
@@ -193,22 +194,23 @@ def revive(gems=True):
                                         logging.error('CancelCode NOT found {}'.format(e))
                                         time.sleep(wR.delay)
                         except Exception as e:
-                            revival_done = check_after_revive(revival_done)
+                            revival_done = check_after_revive()
                     except Exception as e:
                         logging.error('ReviveasRevivalteam NOT found {}'.format(e))
                         time.sleep(wR.delay)
             except Exception as e:
                 logging.error('ReviveGems / Revive NOT found {}'.format(e))
                 time.sleep(wR.delay)
-        logging.info('revived at level {} in {} seconds'.format(wR.level, (time.time() - wR.start_time)/60.0))
-        print('revived at level {} in {} seconds'.format(statistics.median(wR.level_filter), (time.time() - wR.start_time)/60.0))
+        logging.info('revived at level {} in {} minutes'.format(wR.level, (time.time() - wR.start_time)/60.0))
+        print('revived at level {} in {} minutes'.format(statistics.median(wR.level_filter), (time.time() - wR.start_time)/60.0))
         init()
         w.startTimer()
         wR.is_revive = False
     logging.info('revive - done')
 
 
-def check_after_revive(revival_done):
+def check_after_revive():
+    revival_done = False
     while not revival_done:
         try:  # must
             logging.info('ConfirmRevive...')
@@ -250,28 +252,30 @@ def solve_code():
 
     # x, y = pyautogui.locateCenterOnScreen('./pictures/CodeWrong.png', region=(915, 530, 90, 40))
     image = './printscreens/code.png'
-    pyautogui.screenshot(image, region=(825, 265, 1090, 440))
+    im = pyautogui.screenshot(image, region=(825, 265, 265, 175))
+    im.save(image)
     c = CodeDecipher(image)
     for each in c.code:
-        x, y = pyautogui.locateCenterOnScreen('./pictures/' + str(each) + '.png', region=(740, 583, 450, 340))
+        # x, y = pyautogui.locateCenterOnScreen('./pictures/' + str(each) + '.png', grayscale=True, region=(740, 583, 450, 340))
+        x, y = imagesearcharea('./pictures/' + str(each) + '.png', 740, 583, 1190, 923, precision=0.94)
         pyautogui.click(x, y)
         time.sleep(wR.delay)
-    x, y = pyautogui.locateCenterOnScreen('./pictures/CodeConfirm.png', region=(785, 990, 100, 40))
+    # x, y = pyautogui.locateCenterOnScreen('./pictures/CodeConfirm.png', grayscale=True, region=(785, 990, 100, 40))
+    x, y = imagesearcharea('./pictures/CodeConfirm.png', 785, 990, 885, 1030, precision=0.94)
     pyautogui.click(x, y)
     time.sleep(wR.delay * 2 * 2)
     try:
         x, y = pyautogui.locateCenterOnScreen('./pictures/CodeWrong.png', region=(915, 530, 90, 40))
         pyautogui.click(x, y)
         time.sleep(wR.delay)
+        print('solve_code - FAILED')
         logging.debug('solve_code - FAILED')
         return 0
     except Exception as e:
         time.sleep(wR.delay * 2 * 20)
+        print('solve_code - SUCCESS')
         logging.info('solve_code - SUCCESS')
         return 1
-
-
-
 
 
 def reopen_game():

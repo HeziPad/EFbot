@@ -22,6 +22,8 @@ class CodeDecipher():
                      self.numbers[int(self.direction[1])],
                      self.numbers[int(self.direction[2])],
                      self.numbers[int(self.direction[3])]]
+        print(self.direction)
+        print(self.code)
 
     def get_numbers(self):
         numbers = []
@@ -64,7 +66,6 @@ class CodeDecipher():
                         break
                 except Exception as e:
                     pass
-        print(scores)
         return scores[[x[0] for x in scores].index(max([x[0] for x in scores]))][1]
 
     def get_arrow(self):
@@ -150,15 +151,3 @@ class CodeDecipher():
         save_at = self.img[:self.img.rfind('/')] + 'tmp_arrow.png'
         im.save(save_at)
         return im, save_at
-
-
-# change following lines to: print screen + crop(805, 255, 1115, 470)
-for x in range(11,101):
-    im = './printscreens/' + str(x) + '.png'
-    im = Image.open(im)
-    im = im.crop((825, 265, 1090, 440))
-    # until here
-    tmp_save = './printscreens/tmp1.png'
-    im.save(tmp_save)
-
-    c = CodeDecipher(tmp_save)
