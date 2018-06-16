@@ -1,93 +1,95 @@
 import statistics
-from skimage.measure import compare_ssim
-import argparse
-import imutils
-import cv2
-import pyautogui
+
+import os
 import PIL
-from PIL import Image, ImageFilter, ImageEnhance
+import cv2
 import pytesseract
+from PIL import Image, ImageFilter, ImageEnhance
 from pytesseract import image_to_string
-import imageProcessing
-import numpy as np
-import time
-from skimage import img_as_float
-import scipy
+from skimage.measure import compare_ssim
+from imageProcessing import dist, detect_digit
 
 pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 
-def dist(pixel):
-    max_dif = abs(pixel[0] - pixel[1])
-    max_dif = max(abs(pixel[0] - pixel[2]), max_dif)
-    max_dif = max(abs(pixel[1] - pixel[2]), max_dif)
-    return max_dif
+class CodeDecipher():
+    def __init__(self, img_path):
+        self.img = img_path
+        self.direction = self.get_direction()
+        self.numbers = self.get_numbers()
+        self.code = [self.numbers[int(self.direction[0])],
+                     self.numbers[int(self.direction[1])],
+                     self.numbers[int(self.direction[2])],
+                     self.numbers[int(self.direction[3])]]
+        print(self.code)
 
+    def get_numbers(self):
+        numbers = []
+        im = Image.open(self.img)
+        columns, rows = im.size
 
-def detect_number():
-    image = 'number9c.png'
-    im = Image.open(image) # Can be many different formats.
-    enhance = ImageEnhance.Sharpness(im)
-    im = enhance.enhance(3)
+        numbers.append(detect_digit(im.crop((0,           0,        columns / 3, rows / 2))))
+        numbers.append(detect_digit(im.crop((2*columns / 3, 0,        columns,       rows / 2))))
+        numbers.append(detect_digit(im.crop((0,           rows / 2, columns / 3, rows))))
+        numbers.append(detect_digit(im.crop((2*columns / 3, rows / 2, columns,       rows))))
 
-    pix = im.load()
-    columns, rows = im.size # Get the width and hight of the image for iterating over
-    for x in range(columns):
-        for y in range(rows):
-            if dist(pix[x,y]) > 20:
-                pix[x,y] = (0, 0, 0)
+        return numbers
 
-    save = 'number9c_d.png'
-    im.save(save)  # Save the modified pixels as .png
-    img = cv2.imread(save, 0)
-    rows, cols = img.shape
+    def get_direction(self):
+        scores = []
+        im1, path = self.get_arrow()
+        columns, rows = im1.size
+        im1 = cv2.imread(path)
+        directory = './printscreens/directions/'
+        for image in os.listdir(directory):
+            try:
+                im2 = cv2.imread(directory + '/' + image)
+                (score, diff) = compare_ssim(im1, im2, full=True, multichannel=True)
+                if score > 0.9:
+                    scores.append([score, image[:4]])
+                if score == 1.0:
+                    break
+            except:
+                try:
+                    im2 = Image.open(directory + '/' + image)
+                    tmp_image = './printscreens/tmp.png'
+                    tmp = im2.resize((columns, rows), resample=PIL.Image.NEAREST)
+                    tmp.save(tmp_image)
 
-    text = []
-    for x in range(81):
-        M = cv2.getRotationMatrix2D((cols / 2, rows / 2), -40 + x, 1)
-        dst = cv2.warpAffine(img, M, (cols, rows))
-        cv2.imwrite(save, dst)
-        try:
-            text.append(int(image_to_string(Image.open(save), config='-psm 10 -c tessedit_char_whitelist=0123456789')[0]))
-        except:
-            pass
+                    im2 = cv2.imread(tmp_image)
+                    (score, diff) = compare_ssim(im1, im2, full=True, multichannel=True)
+                    if score > 0.9:
+                        scores.append([score, image[:4]])
+                    if score == 1.0:
+                        break
+                except Exception as e:
+                    pass
+        print(scores)
+        return scores[[x[0] for x in scores].index(max([x[0] for x in scores]))][1]
 
-    print(text)
-    print(int(statistics.mode(text)))
-    return text
+    def get_arrow(self):
+        im = Image.open(self.img)
 
-
-def get_order(img_path):
-    # time.sleep(5)
-    # pyautogui.screenshot('cut_code', region=(932, 43, 60, 23))
-
-    WHITE = (255, 255, 255)
-    for each in range(1,101):
-
-        image = './printscreens/' + str(each) + '.png'
-        im = Image.open(image)
-        im = im.crop((805, 255, 1115, 470))
-
+        # coloring the picture - arrow white, rest black
         pix = im.load()
         columns, rows = im.size
         for x in range(0, columns-1):
             for y in range(0, rows-1):
                 if dist(pix[x, y]) < 20:
-                    pix[x, y] = (0, 0, 0)
+                    pix[x, y] = BLACK
                 else:
                     pix[x, y] = WHITE
 
-        save = './printscreens/directions/dir' + str(each) + '.png'
-        im.save(save)
-        im = Image.open(save)
+        # some makeup to picture
         enhance = ImageEnhance.Sharpness(im)
         im = enhance.enhance(3)
         im = im.filter(ImageFilter.MedianFilter(5))
-        im.save(save)
-
-        im = Image.open(save)
         pix = im.load()
         columns, rows = im.size
+
+        # cropping image to fit arrow
         crop = [0, 0, columns, rows] # left top right bot
 
         cropped = False
@@ -145,50 +147,20 @@ def get_order(img_path):
                             pass
                 else:
                     break
-        print(crop)
+
         im = im.crop(crop)
-        im.save(save)
+        save_at = self.img[:self.img.rfind('/')] + 'tmp_arrow.png'
+        im.save(save_at)
+        return im, save_at
 
 
-
-def unique():
-    image = './printscreens/directions/dir' + '13' + '.png'
-    im1 = Image.open(image)
-    columns, rows = im1.size
-    im1 = cv2.imread(image)
-    for each in range(1, 101):
-        try:
-            image = './printscreens/directions/dir' + str(each) + '.png'
-            im2 = cv2.imread(image)
-            (score, diff) = compare_ssim(im1, im2, full=True, multichannel=True)
-            if score > 0.9:
-                print(score, str(each))
-        except:
-            try:
-                image = './printscreens/directions/dir' + str(each) + '.png'
-                im2 = Image.open(image)
-                tmp_image = './printscreens/tmp.png'
-                tmp = im2.resize((columns, rows), resample=PIL.Image.NEAREST)
-                tmp.save(tmp_image)
-
-                im2 = cv2.imread(tmp_image)
-                (score, diff) = compare_ssim(im1, im2, full=True, multichannel=True)
-                if score > 0.9:
-                    print(score, str(each), 'resized')
-            except Exception as e:
-                print('crap', e)
-            pass
-
-def decipher():
-    # print screen + crop(805, 255, 1115, 470)
-    im = './printscreens/1.png'
+# change following lines to: print screen + crop(805, 255, 1115, 470)
+for x in range(11,101):
+    im = './printscreens/' + str(x) + '.png'
     im = Image.open(im)
-    im = im.crop((805, 255, 1115, 470))
+    im = im.crop((825, 265, 1090, 440))
+    # until here
     tmp_save = './printscreens/tmp1.png'
     im.save(tmp_save)
 
-    get_order(tmp_save)
-
-# detect_number()
-# get_order()
-# unique()
+    c = CodeDecipher(tmp_save)
