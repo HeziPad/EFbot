@@ -10,6 +10,7 @@ from pynput import keyboard
 
 from imageProcessing import detect_level
 from myemail import send_gmail
+from decipherCode import CodeDecipher
 
 import logging
 
@@ -137,79 +138,62 @@ def revive(gems=True):
                             logging.info('SolveCode...')
                             x, y = pyautogui.locateCenterOnScreen('./pictures/SolveCode.png', region=(760, 150, 220, 100))
                             logging.info('SolveCode found')
-                            time.sleep(wR.delay)
-                            revival_done = True
-                            counter = 0
-                            while counter < 5:
-                                try:
-                                    logging.info('Sending mail...')
-                                    send_gmail('EF update', ['max level reached!'], 'yechez18@gmail.com', 'Endless@wizard.com')
-                                    logging.info('Sending mail - done...')
-                                    counter = 5
-                                except Exception as e:
-                                    logging.debug('Sending mail failed {}'.format(counter))
-                                    counter += 1
-                                    time.sleep(wR.delay)
-                            while True:
-                                try:
-                                    logging.info('CancelCode...')
-                                    x, y = pyautogui.locateCenterOnScreen('./pictures/CancelCode.png', region=(1050, 990, 100, 50))
-                                    logging.info('CancelCode found')
-                                    pyautogui.click(x, y)
-                                    time.sleep(wR.delay)
-                                    while True:
-                                        try:
-                                            logging.info('XRevive...')
-                                            x, y = pyautogui.locateCenterOnScreen('./pictures/XRevive.png',
-                                                                                  region=(1200, 45, 100, 100))
-                                            logging.info('XRevive found')
-                                            pyautogui.click(x, y)
-                                            time.sleep(wR.delay)
+                            try:
+                                counter = 0
+                                while counter < 5:
+                                    try:
+                                        if solve_code():
+                                            revival_done = True
                                             break
-                                        except Exception as e:
-                                            logging.error('XRevive NOT found {}'.format(e))
-                                            time.sleep(wR.delay)
-                                    w.startTimer()
-                                    wR.is_revive = False
-                                    logging.info('revive - done')
-                                    return
-                                except Exception as e:
-                                    logging.error('CancelCode NOT found {}'.format(e))
-                                    time.sleep(wR.delay)
-                        except Exception as e:
-                            logging.debug('SolveCode NOT found {}'.format(e))
-                            while not revival_done:
-                                try:  # must
-                                    logging.info('ConfirmRevive...')
-                                    x, y = pyautogui.locateCenterOnScreen('./pictures/ConfirmRevive.png', region=(910, 950, 100, 50))
-                                    time.sleep(wR.delay * 2 * 5)
-                                    logging.info('ConfirmRevive found')
-                                    pyautogui.click(x, y)
-                                    time.sleep(wR.delay * 2 * 20)
-                                    revival_done = True
-                                    try:  # maybe
-                                        logging.info('Join...')
-                                        x, y = pyautogui.locateCenterOnScreen('./pictures/Join.png', region=(825, 660, 80, 50))
-                                        logging.info('Join found')
+                                        else:
+                                            counter += 1
+                                    except Exception as e:
+                                        logging.debug('solve_code failed! {}'.format(e))
+                                        counter += 1
+                                print('SOLVED THE MADEFUCKA CODE!!!')
+                                revival_done = check_after_revive(revival_done)
+                            except Exception as e:
+                                counter = 0
+                                while counter < 5:
+                                    try:
+                                        logging.info('Sending mail...')
+                                        send_gmail('EF update', ['max level reached!'], 'yechez18@gmail.com',
+                                                   'Endless@wizard.com')
+                                        logging.info('Sending mail - done...')
+                                        counter = 5
+                                    except Exception as e:
+                                        logging.debug('Sending mail failed {}'.format(counter))
+                                        counter += 1
+                                        time.sleep(wR.delay)
+                                while True:
+                                    try:
+                                        logging.info('CancelCode...')
+                                        x, y = pyautogui.locateCenterOnScreen('./pictures/CancelCode.png',
+                                                                              region=(1050, 990, 100, 50))
+                                        logging.info('CancelCode found')
                                         pyautogui.click(x, y)
-                                        time.sleep(wR.delay * 10 * 2)
+                                        time.sleep(wR.delay)
                                         while True:
-                                            try:  # maybe
-                                                logging.info('JoinConfirm...')
-                                                x, y = pyautogui.locateCenterOnScreen('./pictures/JoinConfirm.png', region=(900, 650, 120, 50))
-                                                logging.info('JoinConfirm found')
+                                            try:
+                                                logging.info('XRevive...')
+                                                x, y = pyautogui.locateCenterOnScreen('./pictures/XRevive.png',
+                                                                                      region=(1200, 45, 100, 100))
+                                                logging.info('XRevive found')
                                                 pyautogui.click(x, y)
                                                 time.sleep(wR.delay)
                                                 break
                                             except Exception as e:
-                                                logging.error('JoinConfirm NOT found {}'.format(e))
+                                                logging.error('XRevive NOT found {}'.format(e))
                                                 time.sleep(wR.delay)
+                                        w.startTimer()
+                                        wR.is_revive = False
+                                        logging.info('revive - done')
+                                        return
                                     except Exception as e:
-                                        logging.debug('Join NOT found {}'.format(e))
+                                        logging.error('CancelCode NOT found {}'.format(e))
                                         time.sleep(wR.delay)
-                                except Exception as e:
-                                    logging.error('ConfirmRevive NOT found {}'.format(e))
-                                    time.sleep(wR.delay)
+                        except Exception as e:
+                            revival_done = check_after_revive(revival_done)
                     except Exception as e:
                         logging.error('ReviveasRevivalteam NOT found {}'.format(e))
                         time.sleep(wR.delay)
@@ -222,6 +206,72 @@ def revive(gems=True):
         w.startTimer()
         wR.is_revive = False
     logging.info('revive - done')
+
+
+def check_after_revive(revival_done):
+    while not revival_done:
+        try:  # must
+            logging.info('ConfirmRevive...')
+            x, y = pyautogui.locateCenterOnScreen('./pictures/ConfirmRevive.png', region=(910, 950, 100, 50))
+            time.sleep(wR.delay * 2 * 5)
+            logging.info('ConfirmRevive found')
+            pyautogui.click(x, y)
+            time.sleep(wR.delay * 2 * 20)
+            revival_done = True
+            try:  # maybe
+                logging.info('Join...')
+                x, y = pyautogui.locateCenterOnScreen('./pictures/Join.png', region=(825, 660, 80, 50))
+                logging.info('Join found')
+                pyautogui.click(x, y)
+                time.sleep(wR.delay * 10 * 2)
+                while True:
+                    try:  # maybe
+                        logging.info('JoinConfirm...')
+                        x, y = pyautogui.locateCenterOnScreen('./pictures/JoinConfirm.png', region=(900, 650, 120, 50))
+                        logging.info('JoinConfirm found')
+                        pyautogui.click(x, y)
+                        time.sleep(wR.delay)
+                        break
+                    except Exception as e:
+                        logging.error('JoinConfirm NOT found {}'.format(e))
+                        time.sleep(wR.delay)
+            except Exception as e:
+                logging.debug('Join NOT found {}'.format(e))
+                time.sleep(wR.delay)
+        except Exception as e:
+            logging.error('ConfirmRevive NOT found {}'.format(e))
+            time.sleep(wR.delay)
+    return revival_done
+
+
+def solve_code():
+    logging.info('solve_code')
+    time.sleep(wR.delay)
+
+    # x, y = pyautogui.locateCenterOnScreen('./pictures/CodeWrong.png', region=(915, 530, 90, 40))
+    image = './printscreens/code.png'
+    pyautogui.screenshot(image, region=(825, 265, 1090, 440))
+    c = CodeDecipher(image)
+    for each in c.code:
+        x, y = pyautogui.locateCenterOnScreen('./pictures/' + str(each) + '.png', region=(740, 583, 450, 340))
+        pyautogui.click(x, y)
+        time.sleep(wR.delay)
+    x, y = pyautogui.locateCenterOnScreen('./pictures/CodeConfirm.png', region=(785, 990, 100, 40))
+    pyautogui.click(x, y)
+    time.sleep(wR.delay * 2 * 2)
+    try:
+        x, y = pyautogui.locateCenterOnScreen('./pictures/CodeWrong.png', region=(915, 530, 90, 40))
+        pyautogui.click(x, y)
+        time.sleep(wR.delay)
+        logging.debug('solve_code - FAILED')
+        return 0
+    except Exception as e:
+        time.sleep(wR.delay * 2 * 20)
+        logging.info('solve_code - SUCCESS')
+        return 1
+
+
+
 
 
 def reopen_game():

@@ -1,16 +1,16 @@
-import pyautogui
-from PIL import Image, ImageEnhance, ImageFilter
-import pytesseract
-from pytesseract import image_to_string
-import numpy as np
-import math, operator
-from skimage import img_as_float
-import cv2
 import statistics
+
+import cv2
+import numpy as np
+import pyautogui
+import pytesseract
+from PIL import Image, ImageEnhance
+from pytesseract import image_to_string
 
 pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+
 
 def dist(pixel):
     max_dif = abs(pixel[0] - pixel[1])
@@ -48,16 +48,6 @@ def detect_digit(im):
 
     pix = im.load()
     columns, rows = im.size # Get the width and height of the image for iterating over
-    # for x in range(columns):
-    #     for y in range(rows):
-    #         if dist(pix[x,y]) > 20:
-    #             pix[x,y] = BLACK
-    # for x in range(columns):
-    #     for y in range(rows):
-    #         if np.mean(pix[x,y]) > 130:
-    #             pix[x,y] = WHITE
-    #         else:
-    #             pix[x, y] = BLACK
     for x in range(columns):
         for y in range(rows):
             if np.mean(pix[x,y]) > 130:

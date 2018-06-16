@@ -1,12 +1,11 @@
-import statistics
-
 import os
+
 import PIL
 import cv2
 import pytesseract
 from PIL import Image, ImageFilter, ImageEnhance
-from pytesseract import image_to_string
 from skimage.measure import compare_ssim
+
 from imageProcessing import dist, detect_digit
 
 pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
@@ -23,7 +22,6 @@ class CodeDecipher():
                      self.numbers[int(self.direction[1])],
                      self.numbers[int(self.direction[2])],
                      self.numbers[int(self.direction[3])]]
-        print(self.code)
 
     def get_numbers(self):
         numbers = []
