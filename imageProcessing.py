@@ -71,40 +71,24 @@ def detect_digit(im):
             text.append(int(image_to_string(Image.open(tmp_save), config='-psm 10 -c tessedit_char_whitelist=0123456789')[0]))
         except:
             pass
+    counter = False
     while True:
         try:
             return int(statistics.mode(text))
         except:
-            text.pop(int(len(text)/2))
+            counter = not counter
+            text.pop(len(text)-1) if counter else text.pop(0)
 
 
-def region_grabber(region):
-    '''grabs a region (topx, topy, bottomx, bottomy)
-    to the tuple (topx, topy, width, height)
-    input : a tuple containing the 4 coordinates of the region to capture
-    output : a PIL image of the area selected.'''
-    x1 = region[0]
-    y1 = region[1]
-    width = region[2]-x1
-    height = region[3]-y1
-
-    return pyautogui.screenshot(region=(x1,y1,width,height))
-
-
-def imagesearcharea(image, x1,y1,x2,y2, precision=0.8, im=None) :
-    '''Searches for an image within an area
-    input :
-    image : path to the image file (see opencv imread for supported types)
-    x1 : top left x value
-    y1 : top left y value
-    x2 : bottom right x value
-    y2 : bottom right y value
+def image_search(image, region, precision=0.94):
+    """Searches for an image within an area, with precision
+    image: path to the image file (see opencv imread for supported types)
+    region: x, y, width, height
     precision : the higher, the lesser tolerant and fewer false positives are found default is 0.8
-    im : a PIL image, usefull if you intend to search the same unchanging region for several elements
     returns :
-    the top left corner coordinates of the element if found as an array [x,y] or [-1,-1] if not'''
-    if im is None :
-        im = region_grabber(region=(x1, y1, x2, y2))
+    the coordinates (x,y) of max match"""
+    x1, y1, width, height = region[0], region[1], region[2], region[3]
+    im = pyautogui.screenshot(region=(x1, y1, width, height))
 
     img_rgb = np.array(im)
     img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
@@ -113,6 +97,5 @@ def imagesearcharea(image, x1,y1,x2,y2, precision=0.8, im=None) :
     res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
     if max_val < precision:
-        return [-1, -1]
+        return None
     return max_loc[0]+x1, max_loc[1]+y1
-

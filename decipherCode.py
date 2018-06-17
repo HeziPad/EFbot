@@ -30,10 +30,10 @@ class CodeDecipher():
         im = Image.open(self.img)
         columns, rows = im.size
 
-        numbers.append(detect_digit(im.crop((0,           0,        columns / 3, rows / 2))))
-        numbers.append(detect_digit(im.crop((2*columns / 3, 0,        columns,       rows / 2))))
-        numbers.append(detect_digit(im.crop((0,           rows / 2, columns / 3, rows))))
-        numbers.append(detect_digit(im.crop((2*columns / 3, rows / 2, columns,       rows))))
+        numbers.append(detect_digit(im.crop((0, 0, columns / 3, rows / 2))))
+        numbers.append(detect_digit(im.crop((2*columns / 3, 0, columns, rows / 2))))
+        numbers.append(detect_digit(im.crop((0, rows / 2, columns / 3, rows))))
+        numbers.append(detect_digit(im.crop((2*columns / 3, rows / 2, columns, rows))))
 
         return numbers
 
