@@ -1,0 +1,7 @@
+.gitignore
+*tmp*
+__*
+code.png
+myemail.py
+
+log.txt
