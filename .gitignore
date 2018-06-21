@@ -1,5 +1,6 @@
 .gitignore
-*tmp*
+tmp.png
+lvl.png
 __*
 code.png
 myemail.py

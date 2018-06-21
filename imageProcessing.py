@@ -80,7 +80,7 @@ def detect_digit(im):
             text.pop(len(text)-1) if counter else text.pop(0)
 
 
-def image_search(image, region, precision=0.94):
+def image_search(image, region, precision=0.9675):
     """Searches for an image within an area, with precision
     image: path to the image file (see opencv imread for supported types)
     region: x, y, width, height
@@ -89,13 +89,16 @@ def image_search(image, region, precision=0.94):
     the coordinates (x,y) of max match"""
     x1, y1, width, height = region[0], region[1], region[2], region[3]
     im = pyautogui.screenshot(region=(x1, y1, width, height))
+    IM = Image.open(image)
+    image_w, image_h = IM.size
 
     img_rgb = np.array(im)
     img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+    # img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2HSV)
     template = cv2.imread(image, 0)
 
     res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
     if max_val < precision:
         return None
-    return max_loc[0]+x1, max_loc[1]+y1
+    return max_loc[0] + x1 + int(image_w/2), max_loc[1] + y1 + int(image_h/2)
