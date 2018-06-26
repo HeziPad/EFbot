@@ -1,10 +1,11 @@
 import statistics
 
+import os
 import cv2
 import numpy as np
 import pyautogui
 import pytesseract
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageFilter
 from pytesseract import image_to_string
 
 pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
@@ -19,23 +20,22 @@ def dist(pixel):
     return max_dif
 
 
-def detect_level():
+def detect_level(region=(932, 43, 60, 23)):
     try:
         image = './pictures/lvl.png'
-        pyautogui.screenshot(image, region=(932, 43, 60, 23))
-        im = Image.open(image) # Can be many different formats.
+        pyautogui.screenshot(image, region)
+        im = Image.open(image)
         enhance = ImageEnhance.Sharpness(im)
         im = enhance.enhance(3)
+        im.save(image)
+        enhance = ImageEnhance.Contrast(im)
+        im = enhance.enhance(1.2)
+        im.save(image)
+        im = im.filter(ImageFilter.DETAIL)
 
-        pix = im.load()
-        columns, rows = im.size # Get the width and hight of the image for iterating over
-        for x in range(columns):
-            for y in range(rows):
-                if dist(pix[x,y]) > 20:
-                    pix[x,y] = BLACK
-        im.save(image)  # Save the modified pixels as .png
+        im.save(image)
         text = int(image_to_string(Image.open(image), lang='eng', boxes=False
-                                   , config='-c tessedit_char_whitelist=0123456789'))
+                                   , config='-psm 13 -c tessedit_char_whitelist=0123456789'))
         return text
     except:
         return 0

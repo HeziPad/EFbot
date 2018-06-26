@@ -36,6 +36,8 @@ class wR():
     spirit_rest = False
     delay = 0.5
     delay_small = 0.1
+    max_revive = 25000
+    min_revive = max_revive - 300    
 
     start_time = time.time()
     level_check_time = time.time()
@@ -132,11 +134,11 @@ def revive(gems=False):
         wR.is_revive = True
         w.stopTimer()
         time.sleep(wR.delay * 2 * 10)
-        pyautogui.click(685, 145)
-        time.sleep(wR.delay * 2 * 2)
         revival_done = False
         while not revival_done:
             try:
+                pyautogui.click(685, 145)
+                time.sleep(wR.delay * 2 * 2)
                 if gems:
                     logging.info('ReviveGems...')
                     x, y = pyautogui.locateCenterOnScreen('./pictures/ReviveGems.png', region=(700, 920, 300, 80))
@@ -172,8 +174,11 @@ def revive(gems=False):
                                         print('not so good',e)
                                         logging.debug('solve_code failed! {}'.format(e))
                                         counter += 1
-                                print('SOLVED THE MADEFUCKA CODE!!!')
-                                revival_done = check_after_revive()
+                                if revival_done:
+                                    print('SOLVED THE MADEFUCKA CODE!!!')
+                                    revival_done = check_after_revive()
+                                else:
+                                    raise Exception('didnt solve code')
                             except Exception as e:
                                 counter = 0
                                 while counter < 5:
@@ -313,21 +318,12 @@ def solve_code():
 
 def reopen_game():
     logging.info('reopen_game')
+    print('reopen_game')
     wR.is_reopen_game = True
     w.stopTimer()
     time.sleep(5)
     close_game()
     open_game()
-    while True:
-        try:
-            logging.info('EndlessFrontier...')
-            x, y = pyautogui.locateCenterOnScreen('./pictures/EndlessFrontier.png')
-            logging.info('EndlessFrontier found')
-            pyautogui.click(x, y)
-            break
-        except Exception as e:
-            logging.error('EndlessFrontier NOT found {}'.format(e))
-            time.sleep(wR.delay * 2)
     while True:
         try:
             logging.info('fullScreen...')
@@ -338,6 +334,16 @@ def reopen_game():
             break
         except Exception as e:
             logging.error('fullScreen NOT found {}'.format(e))
+            time.sleep(wR.delay * 2 )
+    while True:
+        try:
+            logging.info('EndlessFrontier...')
+            x, y = pyautogui.locateCenterOnScreen('./pictures/EndlessFrontier.png')
+            logging.info('EndlessFrontier found')
+            pyautogui.click(x, y)
+            break
+        except Exception as e:
+            logging.error('EndlessFrontier NOT found {}'.format(e))
             time.sleep(wR.delay * 2)
 
     time.sleep(90)
@@ -384,7 +390,7 @@ def level_check():
         try:
             text = detect_level()
             logging.debug('detected level = {}'.format(text))
-            if 24000 >= text >= statistics.median(wR.level_filter[:5]):
+            if wR.max_revive >= text >= statistics.median(wR.level_filter[:5]):
                 wR.level_filter.insert(0, text)
                 wR.level_filter.pop()
             elif text == 0:
@@ -407,7 +413,7 @@ def level_check():
                 logging.debug('Yes. statistics.median(wR.level_filter[:5]) - statistics.median(wR.level_filter[-6:-1]) < 10 ?')
                 if statistics.median(wR.level_filter[:5]) - statistics.median(wR.level_filter[-6:-1]) < 10:
                     logging.debug('Yes. statistics.median(wR.level_filter) > 20800 ?')
-                    if statistics.median(wR.level_filter) > 23600:
+                    if statistics.median(wR.level_filter) > wR.min_revive:
                         wR.max_level_reached = True
                         logging.debug('Yes. wR.max_level_reached = {}'.format(wR.max_level_reached))
                     else:
@@ -415,6 +421,10 @@ def level_check():
                 else:
                     logging.debug('No.')
                     wR.level_check_time = time.time()
+            elif time.time() - wR.start_time > 3600:
+                wR.max_level_reached = True
+                logging.debug('60 minutes passed since last revive. reviving')
+                print('over 60 minutes since last revive')
             else:
                 logging.debug('No.')
 
@@ -647,7 +657,7 @@ def max_quests():
                     elif pyautogui.locateCenterOnScreen('./pictures/last_drag.png', region=(675, 545, 300, 120)):
                         logging.info('last_drag found')
                         wR.last_drag_reached = True
-                        wR.quests_add_rel += drag_by
+                        wR.quests_add_rel += 2 * drag_by / 3
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
                         logging.debug('wR.last_drag_reached = {} wR.quests_add_rel = {}'.format(wR.last_drag_reached, wR.quests_add_rel))
