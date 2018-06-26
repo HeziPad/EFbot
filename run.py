@@ -422,6 +422,17 @@ def reopen_game():
     time.sleep(5)
     close_game()
     open_game()
+
+    while True:
+        try:
+            x, y = pyautogui.locateCenterOnScreen('./pictures/EndlessFrontier.png')
+            logging.info('EndlessFrontier found')
+            pyautogui.click(x, y)
+            break
+        except Exception as e:
+            logging.error('EndlessFrontier NOT found {}'.format(e))
+            time.sleep(wR.delay * 2)
+    time.sleep(wR.delay * 2 * 5)
     while True:
         try:
             x, y = pyautogui.locateCenterOnScreen('./pictures/fullScreen.png')
@@ -432,26 +443,18 @@ def reopen_game():
         except Exception as e:
             logging.error('fullScreen NOT found {}'.format(e))
             time.sleep(wR.delay * 2 )
-    while True:
+
+    tmp_time = time.time()
+
+    while time.time() - tmp_time < 90:
         try:
-            x, y = pyautogui.locateCenterOnScreen('./pictures/EndlessFrontier.png')
-            logging.info('EndlessFrontier found')
+            x, y = pyautogui.locateCenterOnScreen('./pictures/Distortion2Confirm.png', region=(900, 970, 120, 70))
+            logging.info('Distortion2Confirm found')
             pyautogui.click(x, y)
-            break
+            time.sleep(wR.delay * 2 * 2)
         except Exception as e:
-            logging.error('EndlessFrontier NOT found {}'.format(e))
-            time.sleep(wR.delay * 2)
+            logging.debug('Distortion2Confirm NOT found {}'.format(e))
 
-    time.sleep(90)
-    try:
-        x, y = pyautogui.locateCenterOnScreen('./pictures/Distortion2Confirm.png', region=(900, 970, 120, 70))
-        logging.info('Distortion2Confirm found')
-        pyautogui.click(x, y)
-        time.sleep(wR.delay * 2 * 2)
-    except Exception as e:
-        logging.debug('Distortion2Confirm NOT found {}'.format(e))
-
-    while True:
         try:
             x, y = pyautogui.locateCenterOnScreen('./pictures/startConfirm.png', region=(920, 880, 80, 50))
             logging.info('startConfirm found {}'.format(e))
@@ -461,7 +464,7 @@ def reopen_game():
         except Exception as e:
             logging.error('startConfirm NOT found {}'.format(e))
             time.sleep(wR.delay)
-    while True:
+
         try:
             x, y = pyautogui.locateCenterOnScreen('./pictures/XNews.png', region=(1150, 840, 50, 50))
             logging.info('XNews found')
@@ -471,6 +474,7 @@ def reopen_game():
         except Exception as e:
             logging.error('XNews NOT found {}'.format(e))
             time.sleep(wR.delay)
+
     init()
     w.startTimer()
     wR.is_reopen_game = False
