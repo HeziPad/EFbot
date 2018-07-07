@@ -1,7 +1,7 @@
 .gitignore
-tmp.png
+**/*tmp*
+__pycache__
 lvl.png
-__*
 code.png
 myemail.py
 

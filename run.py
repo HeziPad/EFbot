@@ -36,7 +36,7 @@ class wR():
     spirit_rest = False
     delay = 0.5
     delay_small = 0.1
-    max_revive = 25300
+    max_revive = 25700
     min_revive = max_revive - 400    
 
     start_time = time.time()
@@ -63,7 +63,7 @@ class wR():
         self.max_quests_timer.start()
         self.upgrade_units_timer = Timer(8 * 60, upgrade_units)
         self.upgrade_units_timer.start()
-        self.buy_units_timer = Timer(2 * 60, buy_units)
+        self.buy_units_timer = Timer(10, buy_units)
         self.buy_units_timer.start()
         logging.info('START timer - done')
 
@@ -532,27 +532,27 @@ def level_check():
             logging.debug('wR.level_filter = {}'.format(wR.level_filter))
         finally:
             filtered_level = statistics.median(wR.level_filter)
-            # logging.debug('filtered_level = {} wR.level_filter = {}'.format(filtered_level, wR.level_filter))
-            # logging.debug('time.time() - wR.level_check_time >= 60 ?')
-            # if time.time() - wR.level_check_time >= 15:
-            #     wR.level_check_time = time.time()
-            #     logging.debug('statistics.median(wR.level_filter[:5]) = {}, statistics.median(wR.level_filter[-6:-1]) '
-            #                   '= {}'.format(statistics.median(wR.level_filter[:5]), statistics.median(wR.level_filter[-6:-1])))
-            #     logging.debug('Yes. statistics.median(wR.level_filter[:5]) - statistics.median(wR.level_filter[-6:-1]) < 10 ?')
-            #     if statistics.median(wR.level_filter[:5]) - statistics.median(wR.level_filter[-6:-1]) < 10:
-            #         logging.debug('Yes. statistics.median(wR.level_filter) > 20800 ?')
-            #         if statistics.median(wR.level_filter) > wR.min_revive:
-            #             wR.max_level_reached = True
-            #             logging.debug('Yes. wR.max_level_reached = {}'.format(wR.max_level_reached))
-            #         else:
-            #             logging.debug('No.')
-            #     else:
-            #         logging.debug('No.')
+            logging.debug('filtered_level = {} wR.level_filter = {}'.format(filtered_level, wR.level_filter))
             logging.info('time.time() - wR.start_time > 63*60 ?')
-            if time.time() - wR.start_time > 63*60:
-                wR.max_level_reached = True
-                logging.debug('Yes. 63 minutes passed since last revive. reviving')
-                print('over 63 minutes since last revive')
+            if time.time() - wR.start_time > 60*60:
+                if time.time() - wR.start_time > 65*60:
+                    logging.debug('time.time() - wR.start_time > 83*60 ! reviving')
+                    wR.max_level_reached = True
+                    logging.debug('time.time() - wR.level_check_time >= 15 ?')
+                elif time.time() - wR.level_check_time >= 15:
+                    wR.level_check_time = time.time()
+                    logging.debug('statistics.median(wR.level_filter[:5]) = {}, statistics.median(wR.level_filter[-6:-1]) '
+                                  '= {}'.format(statistics.median(wR.level_filter[:5]), statistics.median(wR.level_filter[-6:-1])))
+                    logging.debug('Yes. statistics.median(wR.level_filter[:5]) - statistics.median(wR.level_filter[-6:-1]) < 10 ?')
+                    if statistics.median(wR.level_filter[:5]) - statistics.median(wR.level_filter[-6:-1]) < 10:
+                        logging.debug('Yes. statistics.median(wR.level_filter) > 20800 ?')
+                        if statistics.median(wR.level_filter) > wR.min_revive:
+                            wR.max_level_reached = True
+                            logging.debug('Yes. wR.max_level_reached = {}'.format(wR.max_level_reached))
+                        else:
+                            logging.debug('No.')
+                    else:
+                        logging.debug('No.')
             else:
                 logging.debug('No.')
 
@@ -660,7 +660,8 @@ def max_quests():
                     elif pyautogui.locateCenterOnScreen('./pictures/last_drag.png', region=(675, 545, 300, 120)):
                         logging.info('last_drag found')
                         wR.last_drag_reached = True
-                        wR.quests_add_rel += 2 * drag_by / 3
+                        if 692 + wR.quests_add_rel + 2 * drag_by / 3 < 845:
+                            wR.quests_add_rel += 2 * drag_by / 3
                         pyautogui.click(x, y)
                         time.sleep(wR.delay)
                         logging.debug('wR.last_drag_reached = {} wR.quests_add_rel = {}'.format(wR.last_drag_reached, wR.quests_add_rel))
