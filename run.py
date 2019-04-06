@@ -35,19 +35,22 @@ class wR():
 
     exiting = False  # Don't use
     spirit_rest = False  # Don't use
+    auto_rev = True
     gems = True
     use_power = True
+    use_warp = True
+
     screen_saver_on = False
     delay = 0.5
     delay_small = 0.1
-    max_revive = 38800
-    min_revive = max_revive - 1000
+    max_revive = 47400
+    min_revive = max_revive - 500
     min_lvl_detect = 20000
-    MAX_MIN_TO_REV = 90
+    MAX_MIN_TO_REV = 170
 
     start_time = time.time()
     level_check_time = time.time()
-    level_filter = [1] * 80
+    level_filter = [1] * 150
     filter = [1] * 10
     level = 1
     level_tmp = 1
@@ -98,6 +101,25 @@ class wR():
 """MY FUNCS"""
 
 
+def init():
+    logging.info('init')
+    wR.start_time = time.time()
+    wR.level_check_time = time.time()
+    wR.level_filter = [1] * 200
+    wR.filter = [1] * 10
+    wR.level = 1
+    wR.level_tmp = 1
+    wR.check_number = 0
+    wR.open_chests_counter = 0
+    wR.max_quests_counter = 0
+    wR.quests_add_rel = 0
+    wR.power_used = False
+    wR.upgraded_units_once = False
+    wR.max_level_reached = False
+    wR.last_drag_reached = False
+    logging.info('init - done')
+
+
 def close_game():
     try:
         x, y = pyautogui.locateCenterOnScreen('./pictures/exit_game.png', region=(1860, 0, 59, 40))
@@ -117,25 +139,6 @@ def open_game():
     subprocess.Popen(vm)
 
 
-def init():
-    logging.info('init')
-    wR.start_time = time.time()
-    wR.level_check_time = time.time()
-    wR.level_filter = [1] * 80
-    wR.filter = [1] * 10
-    wR.level = 1
-    wR.level_tmp = 1
-    wR.check_number = 0
-    wR.open_chests_counter = 0
-    wR.max_quests_counter = 0
-    wR.quests_add_rel = 0
-    wR.power_used = False
-    wR.upgraded_units_once = False
-    wR.max_level_reached = False
-    wR.last_drag_reached = False
-    logging.info('init - done')
-
-
 def revive():
     if not wR.is_reopen_game and not wR.is_revive and not wR.is_solve_code:
         wR.is_revive = True
@@ -146,8 +149,9 @@ def revive():
             try:
                 if not wR.power_used and wR.use_power:
                     power()
-                    time.sleep(180)
+                    time.sleep(240)
                     wR.power_used = True
+
 
                 time.sleep(wR.delay * 2 * 2)
                 pyautogui.click(685, 145)
@@ -161,75 +165,67 @@ def revive():
                 pyautogui.click(x, y)
                 time.sleep(wR.delay * 2 * 2)
                 while not revival_done:
-                    try:  # must
-                        x, y = pyautogui.locateCenterOnScreen('./pictures/ReviveasRevivalteam.png', region=(720, 675, 220, 50))
-                        logging.info('ReviveasRevivalteam found')
-                        pyautogui.click(x, y)
-                        time.sleep(wR.delay*2*5)
+                    try:
+                        x, y = pyautogui.locateCenterOnScreen('./pictures/SolveCode.png', region=(730, 80, 100, 50))
+                        logging.info('SolveCode found')
                         try:
-                            x, y = pyautogui.locateCenterOnScreen('./pictures/SolveCode.png', region=(730, 80, 100, 50))
-                            logging.info('SolveCode found')
-                            try:
-                                counter = 0
-                                while counter < 5:
-                                    try:
-                                        if solve_code():
-                                            revival_done = True
-                                            counter = 5
-                                        else:
-                                            counter += 1
-                                    except Exception as e:
-                                        print('not so good',e)
-                                        logging.debug('solve_code failed! {}'.format(e))
-                                        counter += 1
-                                if revival_done:
-                                    print('SOLVED THE MADEFUCKA CODE!!!')
-                                    revival_done = check_after_revive()
-                                else:
-                                    raise Exception('didnt solve code')
-                            except Exception as e:
-                                counter = 0
-                                while counter < 5:
-                                    try:
-                                        logging.info('Sending mail...')
-                                        send_gmail('EF update', ['max level reached!'], 'yechez18@gmail.com',
-                                                   'Endless@wizard.com')
-                                        logging.info('Sending mail - done...')
+                            counter = 0
+                            while counter < 5:
+                                try:
+                                    if solve_code():
+                                        revival_done = True
                                         counter = 5
-                                    except Exception as e:
-                                        logging.debug('Sending mail failed {}'.format(counter))
+                                    else:
                                         counter += 1
-                                        time.sleep(wR.delay)
-                                while True:
-                                    try:
-                                        x, y = pyautogui.locateCenterOnScreen('./pictures/CancelCode.png')
-                                                                              #, region=(1030, 955, 100, 100))
-                                        logging.info('CancelCode found')
-                                        pyautogui.click(x, y)
-                                        time.sleep(wR.delay)
-                                        while True:
-                                            try:
-                                                x, y = pyautogui.locateCenterOnScreen('./pictures/XRevive.png',
-                                                                                      region=(1200, 45, 100, 100))
-                                                logging.info('XRevive found')
-                                                pyautogui.click(x, y)
-                                                time.sleep(wR.delay)
-                                                break
-                                            except Exception as e:
-                                                logging.error('XRevive NOT found {}'.format(e))
-                                                time.sleep(wR.delay)
-                                        w.startTimer()
-                                        wR.is_revive = False
-                                        logging.info('revive - done')
-                                        return
-                                    except Exception as e:
-                                        logging.error('CancelCode NOT found {}'.format(e))
-                                        time.sleep(wR.delay)
+                                except Exception as e:
+                                    print('not so good',e)
+                                    logging.debug('solve_code failed! {}'.format(e))
+                                    counter += 1
+                            if revival_done:
+                                print('SOLVED THE MADEFUCKA CODE!!!')
+                                revival_done = check_after_revive()
+                            else:
+                                raise Exception('didnt solve code')
                         except Exception as e:
-                            revival_done = check_after_revive()
+                            counter = 0
+                            while counter < 5:
+                                try:
+                                    logging.info('Sending mail...')
+                                    send_gmail('EF update', ['max level reached!'], 'yechez18@gmail.com',
+                                               'Endless@wizard.com')
+                                    logging.info('Sending mail - done...')
+                                    counter = 5
+                                except Exception as e:
+                                    logging.debug('Sending mail failed {}'.format(counter))
+                                    counter += 1
+                                    time.sleep(wR.delay)
+                            while True:
+                                try:
+                                    x, y = pyautogui.locateCenterOnScreen('./pictures/CancelCode.png')
+                                                                          #, region=(1030, 955, 100, 100))
+                                    logging.info('CancelCode found')
+                                    pyautogui.click(x, y)
+                                    time.sleep(wR.delay)
+                                    while True:
+                                        try:
+                                            x, y = pyautogui.locateCenterOnScreen('./pictures/XRevive.png',
+                                                                                  region=(1200, 45, 100, 100))
+                                            logging.info('XRevive found')
+                                            pyautogui.click(x, y)
+                                            time.sleep(wR.delay)
+                                            break
+                                        except Exception as e:
+                                            logging.error('XRevive NOT found {}'.format(e))
+                                            time.sleep(wR.delay)
+                                    w.startTimer()
+                                    wR.is_revive = False
+                                    logging.info('revive - done')
+                                    return
+                                except Exception as e:
+                                    logging.error('CancelCode NOT found {}'.format(e))
+                                    time.sleep(wR.delay)
                     except Exception as e:
-                        logging.error('ReviveasRevivalteam NOT found {}'.format(e))
-                        time.sleep(wR.delay)
+                        revival_done = check_after_revive()
             except Exception as e:
                 logging.error('ReviveGems / Revive NOT found {}'.format(e))
                 check_popups()
@@ -439,6 +435,13 @@ def check_popups(check_number=None):
         except Exception as e:
             logging.debug('Distortion3Confirm NOT found {}'.format(e))
         try:
+            x, y = pyautogui.locateCenterOnScreen('./pictures/Distortion4Confirm.png', region=(900, 760, 120, 100))
+            logging.info('Distortion4Confirm found')
+            pyautogui.click(x, y)
+            time.sleep(wR.delay)
+        except Exception as e:
+            logging.debug('Distortion4Confirm NOT found {}'.format(e))
+        try:
             x, y = pyautogui.locateCenterOnScreen('./pictures/quest_confirm.png', region=(875, 800, 150, 100))
             logging.info('quest_confirm found')
             pyautogui.click(x, y)
@@ -488,6 +491,7 @@ def check_popups(check_number=None):
             except Exception as e:
                 logging.debug('UnitsRecruitedConfirm4 NOT found {}'.format(e))
             break
+
 
 
 def check_after_revive():
@@ -695,17 +699,17 @@ def level_check():
                 wR.max_level_reached = True
 
             logging.debug('wR.max_level_reached ?')
-            if wR.max_level_reached:
-                logging.debug('Yes.')
-                revive()
-            else:
-                logging.debug('No')
+            if wR.auto_rev:
+                if wR.max_level_reached:
+                    logging.debug('Yes.')
+                    revive()
+                else:
+                    logging.debug('No')
             logging.info('level_check - done')
 
 
 def use_skills():
     logging.info('use_skills')
-    level_check()
     if wR.exiting:
         return
     elif not wR.is_max_quests and not wR.is_upgrade_units and not wR.is_buy_units \
@@ -730,6 +734,8 @@ def use_skills():
 
 def open_chests():
     logging.info('open_chests')
+    if wR.check_number%3 == 0:
+        level_check()
     if wR.exiting:
         return
     elif not wR.is_max_quests and not wR.is_upgrade_units and not wR.is_buy_units \
@@ -781,9 +787,14 @@ def max_quests():
         finally:
             first_time = 1
             if pyautogui.locateCenterOnScreen('./pictures/questsOn.png', region=(660, 930, 100, 100)):
+
+                if pyautogui.locateCenterOnScreen('./pictures/last_quest_maxed.png', region=(650, 850, 150, 150)):
+                    wR.is_max_quests = False
+                    return
                 last_quest = 0
                 last_drag = False
                 num_of_drags = 0
+
                 while True:
                     blacks = []
                     for x in range(600, 942, 4):  # search for click-able quests
@@ -791,12 +802,12 @@ def max_quests():
                             blacks.append(x)
                     pyautogui.moveTo(930, 770)
                     if not blacks:  # we dragged too much.. by accident ofcourse
-                        if num_of_drags < 10:
+                        if num_of_drags < 20:
                             num_of_drags += 1
                             check_popups()
                             pyautogui.dragRel(0, drag_by, 1, tween=pyautogui.easeOutQuad, button='left')
                         else:
-                            for each in range(0, 10):
+                            for each in range(0, 20):
                                 time.sleep(wR.delay)
                                 pyautogui.moveTo(930, 770)
                                 pyautogui.dragRel(0, -drag_by, 1, tween=pyautogui.easeOutQuad, button='left')
@@ -804,18 +815,20 @@ def max_quests():
                     elif max(blacks) > 800 and not last_drag:  # if there is a potentially better quest to open
                         check_popups()
                         try:
-                            x, y = pyautogui.locateCenterOnScreen('./pictures/last_drag_quest.png', region=(660, 737, 100, 100))
+                            x, y = pyautogui.locateCenterOnScreen('./pictures/last_drag_quest.png', region=(665, 747, 82, 40))
                             pyautogui.click(x, y)
                             last_drag = True
                         except Exception as e:
                             logging.debug('last_drag_quest.png NOT found {}'.format(e))
                             pyautogui.dragRel(0, -drag_by, 1, tween=pyautogui.easeOutQuad, button='left')
+                            wR.max_quests_counter = 0
                     else:
                         last_quest = max(blacks)  # best quest to open
                         break
                     first_time = 0
 
                 if last_quest != 0:
+                    wR.max_quests_counter += 1
                     logging.debug('wR.quests_add_rel = {}'.format(wR.quests_add_rel))
                     for x in range(0, 5): # Click right
                         pyautogui.click(1180, last_quest)
@@ -824,25 +837,16 @@ def max_quests():
                     for x in range(0, 3): # Click left
                         pyautogui.click(900, last_quest)
                         time.sleep(wR.delay_small)
-                    pyautogui.click(700, last_quest)
 
-                    try:
-                        x, y = pyautogui.locateCenterOnScreen('./pictures/quest_confirm.png', region=(875, 800, 150, 100))
-                        logging.info('quest_confirm found')
-                        if pyautogui.locateCenterOnScreen('./pictures/last_quest.png', region=(675, 545, 300, 120)):
-                            logging.info('last_quest found')
-                            pyautogui.click(x, y)
-                            time.sleep(wR.delay)
-                            wR.is_max_quests = False
-                            logging.info('max_quests - done')
-                            return
-                        else:
-                            pyautogui.click(x, y)
-                            time.sleep(wR.delay)
-                        wR.max_quests_counter = 0
-                    except Exception as e:
-                        logging.debug('quest_confirm NOT found {}'.format(e))
-                        wR.max_quests_counter += 1
+                try:
+                    x, y = pyautogui.locateCenterOnScreen('./pictures/quest_confirm.png',
+                                                          region=(875, 800, 150, 100))
+                    logging.info('quest_confirm found')
+                    pyautogui.click(x, y)
+                    time.sleep(wR.delay)
+                except Exception as e:
+                    logging.debug('quest_confirm NOT found {}'.format(e))
+
             else:
                 logging.error('questsOn NOT found')
         wR.is_max_quests = False
@@ -895,6 +899,7 @@ def buy_units():
                         x, y = pyautogui.locateCenterOnScreen('./pictures/RefreshUnitListCancel.png', region=(1020, 700, 100, 50))
                         logging.debug('RefreshUnitListCancel found')
                         pyautogui.click(x, y)
+                        time.sleep(wR.delay * 2 * 2)
                     except:
                         while not done:
                             try:
@@ -990,6 +995,13 @@ def upgrade_units():
                 logging.debug('Unit/quests NOT found {}'.format(e))
         finally:
             if pyautogui.locateCenterOnScreen('./pictures/UnitOn.png', region=(750, 935, 200, 100)):
+                try:
+                    x, y = pyautogui.locateCenterOnScreen('./pictures/XBuyUnits.png', region=(1190, 515, 100, 100))
+                    logging.info('XBuyUnits found')
+                    pyautogui.click(x, y)
+                    time.sleep(wR.delay)
+                except Exception as e:
+                    logging.debug('XBuyUnits NOT found {}'.format(e))
                 logging.debug('wR.upgraded_units_once = {}'.format(wR.upgraded_units_once))
                 if time.time() - wR.start_time > 10*60:
                     if not wR.upgraded_units_once:
